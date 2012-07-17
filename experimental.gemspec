@@ -5,15 +5,22 @@ require 'experimental/version'
 Gem::Specification.new do |gem|
   gem.name          = 'experimental'
   gem.version       = Experimental::VERSION
-  gem.authors       = ['Rebecca Miller-Webster']
-  gem.email         = ['rebecca@howaboutwe.com']
+  gem.authors       = ['HowAboutWe.com', 'Rebecca Miller-Webster', 'Bryan Woods']
+  gem.email         = ['dev@howaboutwe.com']
   gem.description   = "TODO: Write a gem description"
   gem.summary       = "TODO: Write a gem summary"
-  gem.homepage      = ''
+  gem.homepage      = "http://wwww.github.com/howaboutwe/experimental"
+  gem.licenses      = ['MIT']
 
-  gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
-  gem.files         = `git ls-files`.split("\n")
-  gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
+  gem.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
+  gem.test_files = Dir["test/**/*"]
 
-  gem.add_development_dependency 'ritual', '~> 0.4.1'
+  gem.add_dependency "rails", "~> 3.2.6"
+  gem.add_dependency 'jquery-rails'
+
+  gem.add_development_dependency "sqlite3"
+  gem.add_development_dependency 'rspec-rails'
+  gem.add_development_dependency 'activeadmin'
+  gem.add_development_dependency 'sass-rails'
+  gem.add_development_dependency 'coffee-rails'
 end

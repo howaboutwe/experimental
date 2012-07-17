@@ -1,0 +1,50 @@
+<h1><%= @h1 %></h1>
+
+<table>
+  <thead>
+    <tr>
+      <th scope="col"> Name </th>
+      <th scope="col"> Buckets </th>
+      <th scope="col"> Population </th>
+      <th scope="col"> Notes </th>
+      <th scope="col"> Start </th>
+      <th scope="col"> Winner </th>
+      <% if @include_inactive %>
+        <th scope="col"> End </th>
+        <th scope="col"> Removed </th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+  <%= render partial: 'experimental/experiment', collection: @experiments %>
+  </tbody>
+</table>
+
+<script type="text/javascript">
+  $(function(){
+    $(".set_winner").change(function(){
+      var bucket_id = $(this).val();
+      var msg = "Are you sure you want to end this experiment and set the winning bucket to " + bucket_id;
+
+      if( bucket_id > -1 && confirm(msg) ){
+        var exp_id = $(this).siblings().val(); 
+
+        $.ajax({
+          type: "POST",
+          data: {id:exp_id, bucket_id:bucket_id},
+          url: '<%= @experimental_path_names.set_winner %>',
+          success: function(resp){
+            window.location.reload();
+          },
+          error: function(){
+            alert("WE BLEW UP!");
+            $(this).val(-1);
+          }
+        });
+      }
+      else{
+        $(this).val(-1);
+      }
+    });
+  });
+</script>

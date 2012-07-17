@@ -1,0 +1,49 @@
+# run rake experiments:sync to get these into the database
+#   sets start_date to Time.now for experiments in_code
+#   sets removed_at to Time.now for experiments in removed
+
+# these are the experiments with the path still in code
+# note: these could be ended via the Admin
+# Format:
+# -
+#   name: #name of the experiment as symbol
+#   num_buckets: #number of possible buckets (standard a/b test would be 2)
+#   population: #optional
+#       #possible values:
+#           :default or nil = all users
+#           :new_users = users created after start date
+#   notes: #optional. free form notes to see in Admin
+#     # preface this with | in order to have multi-line text
+# Example
+# -
+#   name: :test_experiment
+#   num_buckets: 2
+#   population: :new_users
+#   notes: |
+#      0: sees experiment
+#      1: does not see experiment
+in_code:
+ -
+   name: :test_experiment1
+   num_buckets: 2
+   population: :new_users
+   notes: |
+      0: sees experiment
+      1: does not see experiment
+
+ -
+   name: :test_experiment2
+   num_buckets: 3
+   population: :old_users
+   notes: |
+      0: sees experiment
+      1: does not see experiment
+
+# copy an experiment to this section when all code paths have been removed
+# removed at date will be set in rake task
+# only in_code experiments are loaded, but just in case ...
+# experiment code throws an exception if you reference a removed experiment
+# Example:
+# -
+#  name: :removed_experiment
+removed:
