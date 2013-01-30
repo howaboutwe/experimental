@@ -7,8 +7,8 @@ Gem::Specification.new do |gem|
   gem.version       = Experimental::VERSION
   gem.authors       = ['HowAboutWe.com', 'Rebecca Miller-Webster', 'Bryan Woods']
   gem.email         = ['dev@howaboutwe.com']
-  gem.description   = "TODO: Write a gem description"
-  gem.summary       = "TODO: Write a gem summary"
+  gem.description   = "AB Test framework for Rails"
+  gem.summary       = "Adds support for database-backed AB tests in Rails apps"
   gem.homepage      = "http://wwww.github.com/howaboutwe/experimental"
   gem.licenses      = ['MIT']
 
