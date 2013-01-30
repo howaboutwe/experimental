@@ -1,6 +1,6 @@
 module Experimental
   module RspecHelpers
-    extend ActiveSupport::Concern
+    extend ::ActiveSupport::Concern
 
     def is_in_experiment(val = true, name = nil, obj = nil)
       obj ||= user

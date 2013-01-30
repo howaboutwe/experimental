@@ -29,7 +29,7 @@
 Create admin controllers:
 ````
     class Admin::ExperimentsController < ApplicationController
-      include Experimental::RspecHelpers
+      include Experimental::ControllerActions
 
       alias_method :index, :experiments_index
       alias_method :new, :experiments_new
@@ -43,7 +43,10 @@ Create admin controllers:
         end
       end
 
-      ...
+      def base_resource_name
+        "singles_admin_experiment"
+      end
+
     end
 ````
 
@@ -132,7 +135,7 @@ create an index and new view in appropriate view folder, i.e.
 
 #Testing
 
-in ```spec_helper.rb```
+in ```spec_helper.rb``` (after inclusion of ActiveSupport)
 
 ````
     require 'experimental/rspec_helpers'

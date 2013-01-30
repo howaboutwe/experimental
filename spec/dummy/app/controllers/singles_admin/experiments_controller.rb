@@ -15,7 +15,6 @@ class SinglesAdmin::ExperimentsController < ApplicationController
     end
   end
 
-
   def base_resource_name
     "singles_admin_experiment"
   end
