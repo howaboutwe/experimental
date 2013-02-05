@@ -91,10 +91,10 @@ ActiveAdmin:
       # can do this instead of the ended_or_removed scope below
       # you will need to add a link to inactive_admins_experiments_path
       #  in your view
-      #collection_action :inactive do
-      #  experiments_inactive
-      #  render template: 'admin/experiments/index'
-      #end
+      collection_action :inactive do
+        experiments_inactive
+        render template: 'admin/experiments/index'
+      end
 
       scope :in_progress, :default => true do |experiments|
         experiments.in_progress
@@ -132,6 +132,8 @@ create an index and new view in appropriate view folder, i.e.
     <%= render partial: 'experimental/new' %>
 ````
 
+* Note: ActiveAdmin users will not need to include the links
+  partials *
 
 #Testing
 

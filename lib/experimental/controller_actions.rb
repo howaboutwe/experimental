@@ -23,7 +23,9 @@ module Experimental
       plural_path = "#{base_resource_name.pluralize}_path"
 
       @experimental_path_names.index = self.send(plural_path.to_sym)
-      @experimental_path_names.inactive = self.send("inactive_#{plural_path}".to_sym)
+      if self.respond_to?("inactive_#{plural_path}".to_sym)
+        @experimental_path_names.inactive = self.send("inactive_#{plural_path}".to_sym)
+      end
       @experimental_path_names.new = self.send("new_#{base_resource_name}_path".to_sym)
       @experimental_path_names.set_winner = self.send("set_winner_#{plural_path}".to_sym)
     end

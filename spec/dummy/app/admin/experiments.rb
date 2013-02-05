@@ -30,10 +30,10 @@ ActiveAdmin.register Experimental::Experiment, as: "Experiment" do
     experiments_set_winner
   end
 
-  collection_action :inactive do
-    experiments_inactive
-    render template: 'admin/experiments/index'
-  end
+  #collection_action :inactive do
+    #experiments_inactive
+    #render template: 'admin/experiments/index'
+  #end
 
   scope :in_progress, :default => true do |experiments|
     experiments.in_progress
