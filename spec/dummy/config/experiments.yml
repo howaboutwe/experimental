@@ -24,20 +24,13 @@
 #      1: does not see experiment
 in_code:
  -
-   name: :test_experiment1
+   name: :test_experiment3
    num_buckets: 2
    population: :new_users
    notes: |
       0: sees experiment
       1: does not see experiment
 
- -
-   name: :test_experiment2
-   num_buckets: 3
-   population: :old_users
-   notes: |
-      0: sees experiment
-      1: does not see experiment
 
 # copy an experiment to this section when all code paths have been removed
 # removed at date will be set in rake task
@@ -47,3 +40,10 @@ in_code:
 # -
 #  name: :removed_experiment
 removed:
+ -
+   name: :test_experiment4
+   num_buckets: 3
+   population: :old_users
+   notes: |
+      0: sees experiment
+      1: does not see experiment

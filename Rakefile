@@ -1,5 +1,3 @@
-require 'ritual'
-
 begin
   require 'bundler/setup'
 rescue LoadError
