@@ -23,7 +23,7 @@ class ExperimentalGenerator < Rails::Generators::Base
   end
 
   def copy_migrations
-    migration_template 'create_experiment_table.rb',
-      'db/migrate/create_experiment_table.rb'
+    migration_template 'create_experiments_table.rb',
+      'db/migrate/create_experiments_table.rb'
   end
 end
