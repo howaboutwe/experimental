@@ -56,8 +56,13 @@ describe User do
 
     it "doesn't raise an error" do
       expect {
-        user.in_experiment?(experiment_name)
+        user.in_bucket?(experiment_name, 1)
       }.to_not raise_error(RSpec::Mocks::MockExpectationError)
+    end
+
+    it "returns true for bucket 1" do
+      user.in_bucket?(experiment_name, 1).should be_true
+      user.in_bucket?(experiment_name, 0).should be_false
     end
   end
 
@@ -66,8 +71,13 @@ describe User do
 
     it "doesn't raise an error" do
       expect {
-        user.in_experiment?(experiment_name)
+        user.in_bucket?(experiment_name, 0)
       }.to_not raise_error(RSpec::Mocks::MockExpectationError)
+    end
+
+    it "returns true for bucket 0" do
+      user.in_bucket?(experiment_name, 1).should be_false
+      user.in_bucket?(experiment_name, 0).should be_true
     end
   end
 
