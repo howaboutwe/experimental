@@ -393,20 +393,23 @@ describe Experimental::Experiment do
   end
 
   describe "#remove" do
-    it "updates without protection" do
+    it "updates without protection and expires the cache" do
       experiment = FactoryGirl.create(:experiment)
 
       experiment.should_receive(:update_attributes).
-        with(hash_including(:removed_at), { without_protection: true})
+        with(hash_including(:removed_at), { without_protection: true}).
+        and_return(true)
 
-      experiment.remove
+      experiment.should_receive(:expire_cache)
+
+      experiment.remove.should be_true
     end
 
     context "the experiment has not been removed" do
       let(:experiment) { FactoryGirl.create(:experiment) }
       it "sets the removed_at timestamp to the current time" do
         expect {
-          experiment.remove
+          experiment.remove.should be_true
         }.to change { experiment.removed_at }
       end
     end
@@ -417,8 +420,9 @@ describe Experimental::Experiment do
       end
 
       it "does nothing" do
+        experiment.should_not_receive(:expire_cache)
         expect {
-          experiment.remove
+          experiment.remove.should be_false
         }.to_not change { experiment.removed_at }
       end
     end
