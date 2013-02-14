@@ -72,6 +72,12 @@ module Experimental
       result
     end
 
+    def remove
+      unless removed?
+        update_attributes({ removed_at: Time.now }, without_protection: true)
+      end
+    end
+
     def removed?
       !removed_at.nil?
     end
