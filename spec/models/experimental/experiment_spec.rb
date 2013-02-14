@@ -390,7 +390,42 @@ describe Experimental::Experiment do
         }.to change{ experiment.end_date }
       end
     end
+  end
 
+  describe "#remove" do
+    it "updates without protection and expires the cache" do
+      experiment = FactoryGirl.create(:experiment)
+
+      experiment.should_receive(:update_attributes).
+        with(hash_including(:removed_at), { without_protection: true}).
+        and_return(true)
+
+      experiment.should_receive(:expire_cache)
+
+      experiment.remove.should be_true
+    end
+
+    context "the experiment has not been removed" do
+      let(:experiment) { FactoryGirl.create(:experiment) }
+      it "sets the removed_at timestamp to the current time" do
+        expect {
+          experiment.remove.should be_true
+        }.to change { experiment.removed_at }
+      end
+    end
+
+    context "the experiment has already been removed" do
+      let(:experiment) do
+        FactoryGirl.create(:experiment, removed_at: 1.week.ago)
+      end
+
+      it "does nothing" do
+        experiment.should_not_receive(:expire_cache)
+        expect {
+          experiment.remove.should be_false
+        }.to_not change { experiment.removed_at }
+      end
+    end
   end
 
   describe "#removed?" do

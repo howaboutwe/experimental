@@ -103,9 +103,8 @@ describe Experimental::Loader do
             @e.stub!(:removed_at).and_return(nil)
           end
 
-          it "should set the removed_at date" do
-            @e.should_receive(:update_attributes).with(
-              { removed_at: @time }, update_attrs)
+          it "should remove the experiment" do
+            @e.should_receive(:remove)
             Experimental::Loader.sync
           end
         end
@@ -116,7 +115,7 @@ describe Experimental::Loader do
           end
 
           it "should not set the removed_at date" do
-            @e.should_not_receive(:update_attributes)
+            @e.should_not_receive(:remove)
             Experimental::Loader.sync
           end
         end
