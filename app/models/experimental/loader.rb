@@ -35,7 +35,7 @@ module Experimental
 
           if e && e.removed_at.nil?
             puts "\t\t#{name} exists, removing ..." if verbose
-            result = e.update_attributes({ removed_at: Time.now }, without_protection: true)
+            result = e.remove
             puts "\t\t\t#{result}" if verbose
           else
             puts "\t\t#{name} doesn't exist!" if verbose

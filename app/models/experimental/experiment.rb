@@ -72,6 +72,19 @@ module Experimental
       result
     end
 
+    def remove
+      result = false
+
+      unless removed?
+        result = update_attributes(
+          { removed_at: Time.now }, without_protection: true
+        )
+        expire_cache if result
+      end
+
+      result
+    end
+
     def removed?
       !removed_at.nil?
     end
