@@ -55,6 +55,9 @@ shared_examples_for "third user" do
 end
 
 describe Experimental::Experiment do
+  let(:user) { FactoryGirl.create(:user) }
+  let(:experiment) { FactoryGirl.create(:experiment) }
+
   def stub_sha1(result, name = "test", id = nil)
     id ||= result+1
     Digest::SHA1.stub!(:hexdigest).with("#{name}#{id}").and_return(result.to_s)
@@ -511,9 +514,6 @@ describe Experimental::Experiment do
   end
 
   describe "#in?" do
-    let(:user) { FactoryGirl.create(:user) }
-    let(:experiment) { FactoryGirl.create(:experiment) }
-
     context "when the experiment has been removed" do
       before { experiment.stub(:removed?).and_return(true) }
 
@@ -523,6 +523,20 @@ describe Experimental::Experiment do
 
       it "is false" do
         experiment.in?(user).should be_false
+      end
+    end
+  end
+
+  describe "#bucket" do
+    context "when the experiment has been removed" do
+      before { experiment.stub(removed?: true, winning_bucket: 1) }
+
+      it "does not raise an exception" do
+        expect { experiment.bucket(user) }.to_not raise_error
+      end
+
+      it "returns the winning bucket" do
+        experiment.bucket(user).should == experiment.winning_bucket
       end
     end
   end
