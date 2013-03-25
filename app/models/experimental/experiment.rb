@@ -53,8 +53,7 @@ module Experimental
     end
 
     def bucket(subject)
-      raise "Experiment is removed and should not be called" if removed?
-      ended? ? winning_bucket : bucket_number(subject)
+      (ended? || removed?) ? winning_bucket : bucket_number(subject)
     end
 
     def in?(subject)
