@@ -509,4 +509,21 @@ describe Experimental::Experiment do
       end
     end
   end
+
+  describe "#in?" do
+    let(:user) { FactoryGirl.create(:user) }
+    let(:experiment) { FactoryGirl.create(:experiment) }
+
+    context "when the experiment has been removed" do
+      before { experiment.stub(:removed?).and_return(true) }
+
+      it "does not raise an exception" do
+        expect { experiment.in?(user) }.to_not raise_error
+      end
+
+      it "is false" do
+        experiment.in?(user).should be_false
+      end
+    end
+  end
 end
