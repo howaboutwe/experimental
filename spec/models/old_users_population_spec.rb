@@ -12,6 +12,9 @@ describe User do
     end
   }
 
+  before { Experimental::Experiment.register_population_filter :old_users, Experimental::Population::OldUsers }
+  after { Experimental::Experiment.reset_population_filters }
+
   it "can find the population" do
     Experimental::Experiment.find_population(:old_users).should == Experimental::Population::OldUsers
   end
