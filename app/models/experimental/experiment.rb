@@ -58,7 +58,7 @@ module Experimental
     end
 
     def in?(subject)
-      raise "Experiment is removed and should not be called" if removed?
+      return false if removed?
       population_filter.in?(subject, self)
     end
 
