@@ -6,6 +6,10 @@ describe Experimental::Population::Filter do
       Experimental::Experiment.find_population(:new_users).should == Experimental::Population::NewUsers
     end
 
+    it "accepts the name as a string" do
+      Experimental::Experiment.find_population('new_users').should == Experimental::Population::NewUsers
+    end
+
     it "returns the default if nil is given" do
       Experimental::Experiment.find_population(nil).should == Experimental::Population::Default
     end

@@ -9,12 +9,12 @@ module Experimental
         if name.blank?
           Experimental::Population::Default
         else
-          filter_classes[name]
+          filter_classes[name.to_s]
         end
       end
 
       def register_population_filter(name, filter_class)
-        filter_classes[name] = filter_class
+        filter_classes[name.to_s] = filter_class
       end
 
       def reset_population_filters
