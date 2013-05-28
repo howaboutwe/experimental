@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.email         = ['dev@howaboutwe.com']
   gem.description   = "AB Test framework for Rails"
   gem.summary       = "Adds support for database-backed AB tests in Rails apps"
-  gem.homepage      = "http://github.com/howaboutwe/experimental"
+  gem.homepage      = "https://github.com/howaboutwe/experimental"
   gem.licenses      = ['MIT']
 
   gem.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.markdown"]
