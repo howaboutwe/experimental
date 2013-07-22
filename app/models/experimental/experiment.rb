@@ -5,7 +5,7 @@ module Experimental
     cattr_accessor :use_cache
     @@use_cache = true
 
-    attr_accessible :name, :num_buckets, :notes
+    attr_accessible :name, :num_buckets, :notes, :population
 
     validates_presence_of :name, :num_buckets
     validates_numericality_of :num_buckets, :greater_than_or_equal_to => 2
