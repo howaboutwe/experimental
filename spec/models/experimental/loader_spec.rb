@@ -65,7 +65,7 @@ describe Experimental::Loader do
         removed: [
           { name: :removed_exp, num_buckets: 2, notes: "0 is default, 1 is new" }
       ]
-    }.with_indifferent_access
+    }
   }
 
   let(:update_attrs) { { without_protection: true } }
