@@ -12,7 +12,8 @@ module Experimental
 
         #new/active
         experiments.in_code.each do |exp|
-          name = exp.with_indifferent_access[:name]
+          exp = exp.with_indifferent_access
+          name = exp[:name]
           puts "\tUpdating #{name} ..." if verbose
 
           exp = whitelisted_attrs(exp)
@@ -55,9 +56,11 @@ module Experimental
       end
 
       def whitelisted_attrs(exp)
-        exp.
-          select { |k, v| @@whitelisted_attributes.include?(k.to_sym) }.
-          with_indifferent_access
+        attributes = {}
+        @@whitelisted_attributes.each do |name|
+          attributes[name.to_sym] = exp[name]
+        end
+        attributes
       end
     end
   end
