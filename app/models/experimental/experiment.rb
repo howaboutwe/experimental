@@ -96,6 +96,10 @@ module Experimental
       !removed? && !ended?
     end
 
+    def self.active
+      where(['removed_at IS NULL AND (end_date IS NULL OR ? <= end_date)', Time.now])
+    end
+
     def to_sql_formula(subject_table = "users")
       "CONV(SUBSTR(SHA1(CONCAT(\"#{name}\",#{subject_table}.id)),1,8),16,10) % #{num_buckets}"
     end
