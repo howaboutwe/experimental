@@ -481,33 +481,41 @@ describe Experimental::Experiment do
     end
   end
 
-  describe "#active?" do
-    let(:experiment) { FactoryGirl.build(:experiment) }
+  describe ".active and #active?" do
+    let(:experiment) { FactoryGirl.create(:experiment) }
 
     context "the experiment is removed" do
-      before { experiment.stub(:removed?).and_return(true) }
+      before { experiment.update_attribute(:removed_at, 1.second.ago) }
 
-      it "returns false" do
-        experiment.active?.should be_false
+      it "is not active" do
+        Experimental::Experiment.active.should == []
+        experiment.should_not be_active
       end
     end
 
     context "the experiment is not removed" do
-      before { experiment.stub(:removed?).and_return(false) }
+      context "the experiment has no end date" do
+        it "is active" do
+          Experimental::Experiment.active.should == [experiment]
+          experiment.should be_active
+        end
+      end
 
-      context "the experiment has not ended" do
-        before { experiment.stub(:ended?).and_return(false) }
+      context "the experiment will end in the future" do
+        before { experiment.update_attribute(:end_date, 1.second.from_now) }
 
-        it "returns true" do
-          experiment.active?.should be_true
+        it "is active" do
+          Experimental::Experiment.active.should == [experiment]
+          experiment.should be_active
         end
       end
 
       context "the experiment has ended" do
-        before { experiment.stub(:ended?).and_return(true) }
+        before { experiment.update_attribute(:end_date, 1.second.ago) }
 
         it "returns false" do
-          experiment.active?.should be_false
+          Experimental::Experiment.active.should == []
+          experiment.should_not be_active
         end
       end
     end
