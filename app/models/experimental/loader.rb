@@ -43,9 +43,6 @@ module Experimental
           end
         end unless experiments.removed.nil?
 
-        puts "Expiring cache ..." if verbose
-        Experimental::Experiment.expire_cache
-
         puts "Done syncing experiments!" if verbose
       end
 
