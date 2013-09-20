@@ -21,6 +21,10 @@ FactoryGirl.define do
       end_date 1.day.ago
       winning_bucket 0
     end
+
+    trait :removed do
+      removed_at { Time.now }
+    end
   end
 
   factory :user do

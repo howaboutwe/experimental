@@ -1,0 +1,72 @@
+require 'spec_helper'
+
+describe Experimental::Source::Cache do
+  let(:original) { FactoryGirl.build(:experiment, name: 'e', notes: 'original') }
+  let(:updated) { FactoryGirl.build(:experiment, name: 'e', notes: 'updated') }
+
+  let(:inner) { Support::TestSource.new }
+  let(:source) { Experimental::Source::Cache.new(inner) }
+
+  before { Timecop.freeze(Time.utc(2001, 2, 3, 4, 5, 6)) }
+  after { Timecop.return }
+
+  describe "#[]" do
+    before { inner.add(original) }
+
+    context "on a cold cache" do
+      it "returns the named experiment from the source" do
+        source['e'].should == original
+      end
+    end
+
+    context "when experiments are cached" do
+      before do
+        source.active
+        inner.add(updated)
+      end
+
+      it "returns the cached experiment" do
+        source['e'].should == original
+      end
+
+      context "when the TTL has expired" do
+        let(:source) { Experimental::Source::Cache.new(inner, ttl: 300) }
+        before { Timecop.freeze(Time.now + 301) }
+
+        it "fetches experiments from the source and returns the named experiment" do
+          source['e'].should == updated
+        end
+      end
+    end
+  end
+
+  describe "#active" do
+    before { inner.add(original) }
+
+    context "on a cold cache" do
+      it "returns the active experiment from the source" do
+        source.active.should == [original]
+      end
+    end
+
+    context "when experiments are cached" do
+      before do
+        source.active
+        inner.add(updated)
+      end
+
+      it "returns the cached active experiments" do
+        source.active.should == [original]
+      end
+
+      context "when the TTL has expired" do
+        let(:source) { Experimental::Source::Cache.new(inner, ttl: 300) }
+        before { Timecop.freeze(Time.now + 301) }
+
+        it "fetches and returns experiments from the source" do
+          source.active.should == [updated]
+        end
+      end
+    end
+  end
+end

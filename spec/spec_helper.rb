@@ -9,6 +9,7 @@ require 'rspec/autorun'
 require 'pry'
 require 'shoulda/matchers'
 require 'factory_girl'
+require 'timecop'
 
 require 'experimental'
 require 'experimental/rspec_helpers'
