@@ -9,7 +9,7 @@ module Experimental
     end
 
     def experiment_bucket(name)
-      Experiment[name].try { |e| e.bucket(self) }
+      Experiment[name].try { |e| e.in?(self) ? e.bucket(self) : nil }
     end
 
     def in_bucket?(name, bucket)
