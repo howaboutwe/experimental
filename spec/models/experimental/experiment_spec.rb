@@ -469,6 +469,24 @@ describe Experimental::Experiment do
         experiment.in?(user).should be_false
       end
     end
+
+    context "when the bucket has been forced to a number" do
+      before { Experimental.overrides[user, experiment.name] = 2 }
+      after { Experimental.overrides.reset }
+
+      it "is true" do
+        experiment.in?(user).should be_true
+      end
+    end
+
+    context "when the bucket has been forced to nil" do
+      before { Experimental.overrides[user, experiment.name] = nil }
+      after { Experimental.overrides.reset }
+
+      it "is false" do
+        experiment.in?(user).should be_false
+      end
+    end
   end
 
   describe "#bucket" do
@@ -481,6 +499,24 @@ describe Experimental::Experiment do
 
       it "returns the winning bucket" do
         experiment.bucket(user).should == experiment.winning_bucket
+      end
+    end
+
+    context "when the bucket has been forced to a number" do
+      before { Experimental.overrides[user, experiment.name] = 2 }
+      after { Experimental.overrides.reset }
+
+      it "returns the bucket" do
+        experiment.bucket(user).should == 2
+      end
+    end
+
+    context "when the bucket has been forced to nil" do
+      before { Experimental.overrides[user, experiment.name] = nil }
+      after { Experimental.overrides.reset }
+
+      it "returns nil" do
+        experiment.bucket(user).should be_nil
       end
     end
   end

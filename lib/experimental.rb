@@ -4,7 +4,9 @@ require 'experimental/engine'
 module Experimental
   autoload :VERSION, 'experimental/version'
   autoload :ControllerActions, 'experimental/controller_actions'
+  autoload :Overrides, 'experimental/overrides'
   autoload :Source, 'experimental/source'
+  autoload :Test, 'experimental/test'
 
   class << self
     def configure(configuration)
@@ -12,7 +14,8 @@ module Experimental
       if (ttl = configuration['cache_for'])
         source = Source::Cache.new(source, ttl: ttl)
       end
-      Experimental.source = source
+      self.experiment_data = configuration['experiments']
+      self.source = source
     end
 
     def register_population_filter(name, filter_class)
@@ -27,9 +30,22 @@ module Experimental
       Thread.current[:experimental_source] ||= Source::ActiveRecord.new
     end
 
+    def experiment_data=(data)
+      Thread.current[:experimental_data] = data
+    end
+
+    def experiment_data
+      Thread.current[:experimental_data] ||= {}
+    end
+
     def reset
-      Thread.current[:experimental_source] = nil
+      self.source = nil
+      self.experiment_data = nil
       Experiment.reset_population_filters
     end
+  end
+
+  def self.overrides
+    Thread.current[:experimental_overrides] ||= Overrides.new
   end
 end

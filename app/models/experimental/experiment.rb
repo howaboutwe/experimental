@@ -36,12 +36,23 @@ module Experimental
     end
 
     def bucket(subject)
-      (ended? || removed?) ? winning_bucket : bucket_number(subject)
+      if ended? || removed?
+        winning_bucket
+      elsif Experimental.overrides.include?(subject, name)
+        Experimental.overrides[subject, name]
+      else
+        bucket_number(subject)
+      end
     end
 
     def in?(subject)
-      return false if removed?
-      population_filter.in?(subject, self)
+      if removed?
+        false
+      elsif Experimental.overrides.include?(subject, name)
+        !!Experimental.overrides[subject, name]
+      else
+        population_filter.in?(subject, self)
+      end
     end
 
     def end(winning_num)

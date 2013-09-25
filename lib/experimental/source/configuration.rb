@@ -1,10 +1,10 @@
 module Experimental
   module Source
-    class Data < Base
-      def initialize(experiment_data)
+    class Configuration < Base
+      def initialize
         @experiments = {}
-        experiment_data.each do |attributes|
-          experiment = Experiment.new(attributes)
+        Experimental.experiment_data.each do |name, attributes|
+          experiment = Experiment.new(attributes) { |e| e.name = name }
           @experiments[experiment.name] = experiment
         end
       end
