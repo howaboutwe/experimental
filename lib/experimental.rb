@@ -4,6 +4,7 @@ require 'experimental/engine'
 module Experimental
   autoload :VERSION, 'experimental/version'
   autoload :ControllerActions, 'experimental/controller_actions'
+  autoload :Loader, 'experimental/loader'
   autoload :Overrides, 'experimental/overrides'
   autoload :Source, 'experimental/source'
   autoload :Test, 'experimental/test'
