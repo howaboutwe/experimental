@@ -3,7 +3,7 @@ require 'logger'
 module Experimental
   class Loader
     def initialize(options = {})
-      @logger = options[:logger] || Logger.new(STDOUT)
+      @logger = options[:logger] || Logger.new('/dev/null')
     end
 
     attr_reader :logger
