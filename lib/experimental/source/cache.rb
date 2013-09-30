@@ -16,7 +16,7 @@ module Experimental
 
       def [](name)
         refresh if dirty?
-        cache[name]
+        cache[name.to_s]
       end
 
       def active

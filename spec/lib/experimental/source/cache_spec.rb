@@ -17,6 +17,10 @@ describe Experimental::Source::Cache do
       it "returns the named experiment from the source" do
         source['e'].should == original
       end
+
+      it "accepts a symbol for the experiment name" do
+        source[:e].should == original
+      end
     end
 
     context "when experiments are cached" do
