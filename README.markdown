@@ -202,8 +202,7 @@ A removed experiment is an experiment that is not referenced
 anywhere in code.  In fact, the framework will throw an exception
 if you reference an experiment that is not in code.
 
-Moving an experiment from the in_code to the removed section of
-`config/experiments.yml` and running `rake experiments:sync` will
+Removing an experiment from `config/experiments.yml` and running `rake experiments:sync` will
 remove the experiment and expire the cache.
 
 ```yaml
