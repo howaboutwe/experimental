@@ -50,3 +50,5 @@ module Experimental
     Thread.current[:experimental_overrides] ||= Overrides.new
   end
 end
+
+require 'experimental/railtie' if defined?(Rails)
