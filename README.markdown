@@ -159,7 +159,7 @@ end
 
 ### Create an experiment
 
-In `config/experiments.yml`, add the name, num_buckets, and notes of the
+In `config/experimental.yml`, add the name, num_buckets, and notes of the
 experiment under in_code:
 ```yaml
 in_code:
@@ -171,7 +171,7 @@ in_code:
     1: $19.99
 
 ```
-Then run `rake experiments:sync`
+Then run `rake experimental:sync`
 
 ### Using the experiment
 
@@ -202,15 +202,15 @@ A removed experiment is an experiment that is not referenced
 anywhere in code.  In fact, the framework will throw an exception
 if you reference an experiment that is not in code.
 
-Removing an experiment from `config/experiments.yml` and running `rake experiments:sync` will
-remove the experiment and expire the cache.
+Removing an experiment from `config/experimental.yml` and running `rake
+experimental:sync` will remove the experiment and expire the cache.
 
 ```yaml
 removed:
 -
   name: :price_experiment
 ```
-Then run `rake experiments:sync`
+Then run `rake experimental:sync`
 
 ## Testing
 
@@ -284,13 +284,13 @@ has_experiment_bucket(1)
 
 ## Developer Workflow
 
-Experiments *can* be defined in config/experiments.yml
-Running the rake task `rake experiments:sync` will load those
+Experiments *can* be defined in `config/experimental.yml`
+Running the rake task `rake experimental:sync` will load those
 experiments under 'in_code' into the database and set removed_at
 timestamp for those under 'removed'
 
 You will likely want to automate the running of `rake
-experiments:sync` by adding to your deploy file.
+experimental:sync` by adding to your deploy file.
 
 ### Capistrano
 In `config/deploy.rb`:
@@ -300,7 +300,7 @@ Create a namespace to run the task:
 namespace :database do
   desc "Sync experiments"
   task :sync_from_app, roles: :db, only: { primary: true } do
-    run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec rake experiments:sync"
+    run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec rake experimental:sync"
   end
 end
 ```

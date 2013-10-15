@@ -1,4 +1,4 @@
-namespace :experiments do
+namespace :experimental do
   desc "sync experiments from config/experiment.yml into the database"
   task :sync => :environment do
     logger = Logger.new(STDOUT)
