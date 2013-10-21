@@ -334,6 +334,39 @@ describe Experimental::Experiment do
     end
   end
 
+  describe "#restart" do
+    context "when given an experiment that has already ended" do
+      let(:experiment) { FactoryGirl.create(:ended_experiment) }
+
+      it "sets the winning bucket to nil" do
+        experiment.winning_bucket.should_not be_nil
+        experiment.restart
+        experiment.winning_bucket.should be_nil
+      end
+
+      it "sets the end date to nil" do
+        experiment.should be_ended
+        experiment.restart
+        experiment.reload.should_not be_ended
+      end
+
+      it "expires the Experimental cache" do
+        Experimental::Experiment.should_receive(:expire_cache)
+        experiment.restart
+      end
+    end
+
+    context "when given an experiment that has not already ended" do
+      let(:experiment) { FactoryGirl.create(:experiment) }
+
+      it "does nothing" do
+        old_attributes = experiment.attributes
+        experiment.restart.should be_nil
+        experiment.attributes.should == old_attributes
+      end
+    end
+  end
+
   describe "#remove" do
     it "updates without protection" do
       experiment = FactoryGirl.create(:experiment)

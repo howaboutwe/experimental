@@ -61,6 +61,15 @@ module Experimental
       save
     end
 
+    def restart
+      return unless ended?
+
+      self.winning_bucket = nil
+      self.end_date = nil
+
+      save
+    end
+
     def remove
       result = false
 
