@@ -24,19 +24,19 @@ module Experimental
     end
 
     def source=(source)
-      Thread.current[:experimental_source] = source
+      @experimental_source = source
     end
 
     def source
-      Thread.current[:experimental_source] ||= Source::ActiveRecord.new
+      @experimental_source ||= Source::ActiveRecord.new
     end
 
     def experiment_data=(data)
-      Thread.current[:experimental_data] = data
+      @experimental_data = data
     end
 
     def experiment_data
-      Thread.current[:experimental_data] ||= {}
+      @experimental_data ||= {}
     end
 
     def reset

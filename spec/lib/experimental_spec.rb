@@ -19,5 +19,13 @@ describe Experimental do
       Experimental.source.source.should be_a(Experimental::Source::ActiveRecord)
       Experimental.source.ttl.should == 300
     end
+
+    it "ensures the configured state persists across threads (e.g. under spork)" do
+      Experimental.configure('cache_for' => 300, 'experiments' => {'name' => {}})
+      Thread.new do
+        Experimental.source.should be_a(Experimental::Source::Cache)
+        Experimental.experiment_data.should == {'name' => {}}
+      end.join
+    end
   end
 end
