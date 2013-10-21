@@ -349,11 +349,6 @@ describe Experimental::Experiment do
         experiment.restart
         experiment.reload.should_not be_ended
       end
-
-      it "expires the Experimental cache" do
-        Experimental::Experiment.should_receive(:expire_cache)
-        experiment.restart
-      end
     end
 
     context "when given an experiment that has not already ended" do
