@@ -421,7 +421,9 @@ describe Experimental::Experiment do
       let(:experiment) { FactoryGirl.create(:experiment) }
 
       it "does nothing" do
-        expect { experiment.restart }.to_not change { experiment }
+        old_attributes = experiment.attributes
+        experiment.restart.should be_nil
+        experiment.attributes.should == old_attributes
       end
     end
   end
