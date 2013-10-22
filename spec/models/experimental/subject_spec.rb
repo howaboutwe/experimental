@@ -56,7 +56,15 @@ describe Experimental::Subject do
   end
 
   describe "#experiment_bucket" do
-    context "experiment exists" do
+    context "user is not in experiment" do
+      before { Experimental::Experiment.any_instance.stub(in?: false) }
+
+      it "returns nil" do
+        user.experiment_bucket(experiment_name).should be_nil
+      end
+    end
+
+    context "user is in experiment" do
       context "user is in bucket 0" do
         include_context "in experiment bucket 0"
 

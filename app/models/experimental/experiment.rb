@@ -2,9 +2,6 @@ module Experimental
   class Experiment < ActiveRecord::Base
     extend Population::Filter
 
-    cattr_accessor :use_cache
-    @@use_cache = true
-
     attr_accessible :name, :num_buckets, :notes, :population
 
     validates_presence_of :name, :num_buckets
@@ -13,8 +10,6 @@ module Experimental
       :greater_than_or_equal_to => 0,
       :less_than => :num_buckets,
       :if => :ended?
-
-    after_create :expire_cache
 
     def self.in_code
       where(:removed_at => nil)
@@ -37,44 +32,40 @@ module Experimental
     end
 
     def self.[](experiment_name)
-      if use_cache
-        Cache.get(experiment_name)
-      else
-        find_by_name(experiment_name.to_s)
-      end
-    end
-
-    def self.expire_cache
-      Cache.expire_last_updated if use_cache
-    end
-
-    def expire_cache
-      Experiment.expire_cache
+      Experimental.source[experiment_name.to_s]
     end
 
     def bucket(subject)
-      (ended? || removed?) ? winning_bucket : bucket_number(subject)
+      if ended? || removed?
+        winning_bucket
+      elsif Experimental.overrides.include?(subject, name)
+        Experimental.overrides[subject, name]
+      else
+        bucket_number(subject)
+      end
     end
 
     def in?(subject)
-      return false if removed?
-      population_filter.in?(subject, self)
+      if removed?
+        false
+      elsif Experimental.overrides.include?(subject, name)
+        !!Experimental.overrides[subject, name]
+      else
+        population_filter.in?(subject, self)
+      end
     end
 
     def end(winning_num)
       self.winning_bucket = winning_num
       self.end_date = Time.now
-      result = save
-
-      Experiment.expire_cache if result
-
-      result
+      save
     end
 
     def restart
       return unless ended?
 
       self.winning_bucket = nil
+      self.start_date = Time.now
       self.end_date = nil
 
       save
@@ -87,7 +78,6 @@ module Experimental
         result = update_attributes(
           { removed_at: Time.now }, without_protection: true
         )
-        expire_cache if result
       end
 
       result

@@ -128,23 +128,6 @@ describe Experimental::Experiment do
     end
   end
 
-  describe ".expire_cache" do
-    context "when using cache" do
-      it "should call Experimental::Cache.expire_last_update" do
-        Experimental::Experiment.use_cache = true
-        Experimental::Cache.should_receive(:expire_last_updated)
-        Experimental::Experiment.expire_cache
-      end
-    end
-    context "when not using cache" do
-      it "should not call Experimental::Cache" do
-        Experimental::Experiment.use_cache = false
-        Experimental::Cache.should_not_receive(:expire_last_updated)
-        Experimental::Experiment.expire_cache
-      end
-    end
-  end
-
   describe "validation of winning bucket" do
     let(:e) { FactoryGirl.build(:experiment) }
 
@@ -200,37 +183,17 @@ describe Experimental::Experiment do
   end
 
   describe ".[]" do
-    before(:each) do
-      FactoryGirl.create(:experiment, name: 'how')
-      FactoryGirl.create(:experiment, name: 'about')
-      FactoryGirl.create(:experiment, name: 'we')
+    let(:experiment) { FactoryGirl.create(:experiment, name: 'exp') }
+
+    before do
+      Experimental.source = Support::TestSource.new
+      Experimental.source.add(experiment)
     end
 
-    let(:experiment) { Experimental::Experiment.last }
+    after { Experimental.reset }
 
-    context "use_cache is true" do
-      before do
-        Experimental::Experiment.stub!(:use_cache).and_return(true)
-
-        Experimental::Cache.stub!(:get, :about).
-          and_return(Experimental::Experiment.find_by_name(:about))
-      end
-
-      it "returns the experiment from the cache" do
-        Experimental::Experiment[:about].should_not be_nil
-      end
-    end
-
-    context "use_cache is false" do
-      before do
-        Experimental::Experiment.stub!(:use_cache).and_return(false)
-      end
-
-      it "returns the experiment from the database" do
-        Experimental::Experiment.should_receive(:find_by_name).and_return(experiment)
-
-        Experimental::Experiment[:we].should == Experimental::Experiment.where(name: 'we').last
-      end
+    it "fetches the experiment from the configured source" do
+      Experimental::Experiment['exp'].should == experiment
     end
   end
 
@@ -338,30 +301,6 @@ describe Experimental::Experiment do
             experiment.end(winning_num)
           }.to change{ experiment.end_date }
         end
-
-        context "when save is successful" do
-          it "should expire the cache" do
-            Experimental::Experiment.use_cache = true
-            e = FactoryGirl.create(:experiment)
-
-            e.stub!(:save).and_return(true)
-            Experimental::Experiment.should_receive(:expire_cache)
-
-            e.end(0)
-          end
-        end
-
-        context "when save is not successful" do
-          it "should expire the cache" do
-            Experimental::Experiment.use_cache = true
-            e = FactoryGirl.create(:experiment)
-
-            e.stub!(:save).and_return(false)
-            Experimental::Experiment.should_not_receive(:expire_cache)
-
-            e.end(0)
-          end
-        end
       end
 
       context "when the winning bucket number is invalid" do
@@ -397,7 +336,9 @@ describe Experimental::Experiment do
 
   describe "#restart" do
     context "when given an experiment that has already ended" do
-      let(:experiment) { FactoryGirl.create(:ended_experiment) }
+      let(:experiment) do
+        FactoryGirl.create(:ended_experiment, start_date: "1990-01-01")
+      end
 
       it "sets the winning bucket to nil" do
         experiment.winning_bucket.should_not be_nil
@@ -405,15 +346,19 @@ describe Experimental::Experiment do
         experiment.winning_bucket.should be_nil
       end
 
+      it "sets the start date to the current time" do
+        october_22_2023 = 1697998635
+        Time.stub(now: Time.at(october_22_2023))
+
+        experiment.start_date.strftime("%m-%d-%Y").should == "01-01-1990"
+        experiment.restart
+        experiment.start_date.strftime("%m-%d-%Y").should == "10-22-2023"
+      end
+
       it "sets the end date to nil" do
         experiment.should be_ended
         experiment.restart
         experiment.reload.should_not be_ended
-      end
-
-      it "expires the Experimental cache" do
-        Experimental::Experiment.should_receive(:expire_cache)
-        experiment.restart
       end
     end
 
@@ -429,14 +374,12 @@ describe Experimental::Experiment do
   end
 
   describe "#remove" do
-    it "updates without protection and expires the cache" do
+    it "updates without protection" do
       experiment = FactoryGirl.create(:experiment)
 
       experiment.should_receive(:update_attributes).
         with(hash_including(:removed_at), { without_protection: true}).
         and_return(true)
-
-      experiment.should_receive(:expire_cache)
 
       experiment.remove.should be_true
     end
@@ -456,7 +399,6 @@ describe Experimental::Experiment do
       end
 
       it "does nothing" do
-        experiment.should_not_receive(:expire_cache)
         expect {
           experiment.remove.should be_false
         }.to_not change { experiment.removed_at }
@@ -566,6 +508,24 @@ describe Experimental::Experiment do
         experiment.in?(user).should be_false
       end
     end
+
+    context "when the bucket has been forced to a number" do
+      before { Experimental.overrides[user, experiment.name] = 2 }
+      after { Experimental.overrides.reset }
+
+      it "is true" do
+        experiment.in?(user).should be_true
+      end
+    end
+
+    context "when the bucket has been forced to nil" do
+      before { Experimental.overrides[user, experiment.name] = nil }
+      after { Experimental.overrides.reset }
+
+      it "is false" do
+        experiment.in?(user).should be_false
+      end
+    end
   end
 
   describe "#bucket" do
@@ -578,6 +538,24 @@ describe Experimental::Experiment do
 
       it "returns the winning bucket" do
         experiment.bucket(user).should == experiment.winning_bucket
+      end
+    end
+
+    context "when the bucket has been forced to a number" do
+      before { Experimental.overrides[user, experiment.name] = 2 }
+      after { Experimental.overrides.reset }
+
+      it "returns the bucket" do
+        experiment.bucket(user).should == 2
+      end
+    end
+
+    context "when the bucket has been forced to nil" do
+      before { Experimental.overrides[user, experiment.name] = nil }
+      after { Experimental.overrides.reset }
+
+      it "returns nil" do
+        experiment.bucket(user).should be_nil
       end
     end
   end
