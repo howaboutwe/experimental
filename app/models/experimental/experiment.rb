@@ -65,6 +65,7 @@ module Experimental
       return unless ended?
 
       self.winning_bucket = nil
+      self.start_date = Time.now
       self.end_date = nil
 
       save
