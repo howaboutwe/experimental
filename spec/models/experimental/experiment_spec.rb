@@ -336,12 +336,23 @@ describe Experimental::Experiment do
 
   describe "#restart" do
     context "when given an experiment that has already ended" do
-      let(:experiment) { FactoryGirl.create(:ended_experiment) }
+      let(:experiment) do
+        FactoryGirl.create(:ended_experiment, start_date: "1990-01-01")
+      end
 
       it "sets the winning bucket to nil" do
         experiment.winning_bucket.should_not be_nil
         experiment.restart
         experiment.winning_bucket.should be_nil
+      end
+
+      it "sets the start date to the current time" do
+        october_22_2023 = 1697998635
+        Time.stub(now: Time.at(october_22_2023))
+
+        experiment.start_date.strftime("%m-%d-%Y").should == "01-01-1990"
+        experiment.restart
+        experiment.start_date.strftime("%m-%d-%Y").should == "10-22-2023"
       end
 
       it "sets the end date to nil" do
