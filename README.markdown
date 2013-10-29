@@ -185,6 +185,12 @@ user.in_bucket?(:my_experiment, 0)
 To see if a user is in the experiment population **ONLY**
 ```ruby
 user.in_experiment?(:my_experiment)
+user.not_in_experiment?(:my_experiment) # inverse
+```
+
+To see which bucket of an experiment a user is in:
+```ruby
+user.experiment_bucket(:my_experiment)
 ```
 
 ### Ending an experiment
