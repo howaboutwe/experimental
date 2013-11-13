@@ -22,10 +22,10 @@ describe Experimental::Source::Configuration do
     end
   end
 
-  describe ".active" do
-    it "returns all active experiments" do
-      source.active.map(&:name).should == ['a', 'b']
-      source.active.map(&:num_buckets).should == [2, 3]
+  describe ".available" do
+    it "returns all available experiments" do
+      source.available.map(&:name).should == ['a', 'b']
+      source.available.map(&:num_buckets).should == [2, 3]
     end
   end
 end

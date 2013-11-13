@@ -5,8 +5,8 @@ module Experimental
         Experiment.find_by_name(name)
       end
 
-      def active
-        Experiment.active.all
+      def available
+        Experiment.available.all
       end
     end
   end

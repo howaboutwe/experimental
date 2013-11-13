@@ -14,7 +14,7 @@ module Support
       experiments[name]
     end
 
-    def active
+    def available
       experiments.values
     end
   end

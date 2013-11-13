@@ -19,25 +19,20 @@ describe Experimental::Source::ActiveRecord do
     end
   end
 
-  describe ".active" do
-    it "returns all active experiments" do
+  describe ".available" do
+    it "returns all non-removed experiments" do
       experiment = FactoryGirl.create(:experiment, removed_at: nil, end_date: nil)
-      source.active.should == [experiment]
+      source.available.should == [experiment]
     end
 
-    it "includes experiments that will end in the future" do
-      experiment = FactoryGirl.create(:experiment, removed_at: nil, end_date: Time.now.utc + 1.second)
-      source.active.should == [experiment]
-    end
-
-    it "excludes ended experiments" do
+    it "includes ended experiments" do
       experiment = FactoryGirl.create(:ended_experiment)
-      source.active.should == []
+      source.available.should == [experiment]
     end
 
     it "excludes removed experiments" do
       experiment = FactoryGirl.create(:experiment, :removed)
-      source.active.should == []
+      source.available.should == []
     end
   end
 end

@@ -19,7 +19,7 @@ module Experimental
         cache[name.to_s]
       end
 
-      def active
+      def available
         refresh if dirty?
         cache.values
       end
@@ -35,7 +35,7 @@ module Experimental
 
       def refresh
         cache.clear
-        source.active.each do |experiment|
+        source.available.each do |experiment|
           cache[experiment.name] = experiment
         end
         self.last_update = Time.now.to_f
