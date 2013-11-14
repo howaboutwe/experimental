@@ -360,6 +360,12 @@ describe Experimental::Experiment do
         experiment.restart
         experiment.reload.should_not be_ended
       end
+
+      it "sets the removed at to nil" do
+        experiment.remove
+        experiment.restart
+        experiment.should_not be_removed
+      end
     end
 
     context "when given an experiment that has not already ended" do

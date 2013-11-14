@@ -67,6 +67,7 @@ module Experimental
       self.winning_bucket = nil
       self.start_date = Time.now
       self.end_date = nil
+      self.removed_at = nil
 
       save
     end
