@@ -6,8 +6,8 @@ module Experimental
         raise NotImplementedError, 'abstract'
       end
 
-      # Return all active experiments.
-      def active
+      # Return all non-removed experiments.
+      def available
         raise NotImplementedError, 'abstract'
       end
     end

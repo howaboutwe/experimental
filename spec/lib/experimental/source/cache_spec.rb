@@ -25,7 +25,7 @@ describe Experimental::Source::Cache do
 
     context "when experiments are cached" do
       before do
-        source.active
+        source.available
         inner.add(updated)
       end
 
@@ -44,23 +44,23 @@ describe Experimental::Source::Cache do
     end
   end
 
-  describe "#active" do
+  describe "#available" do
     before { inner.add(original) }
 
     context "on a cold cache" do
-      it "returns the active experiment from the source" do
-        source.active.should == [original]
+      it "returns the experiment from the source" do
+        source.available.should == [original]
       end
     end
 
     context "when experiments are cached" do
       before do
-        source.active
+        source.available
         inner.add(updated)
       end
 
-      it "returns the cached active experiments" do
-        source.active.should == [original]
+      it "returns the cached available experiments" do
+        source.available.should == [original]
       end
 
       context "when the TTL has expired" do
@@ -68,7 +68,7 @@ describe Experimental::Source::Cache do
         before { Timecop.freeze(Time.now + 301) }
 
         it "fetches and returns experiments from the source" do
-          source.active.should == [updated]
+          source.available.should == [updated]
         end
       end
     end

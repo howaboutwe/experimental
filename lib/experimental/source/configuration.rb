@@ -13,7 +13,7 @@ module Experimental
         @experiments[name.to_s]
       end
 
-      def active
+      def available
         @experiments.values
       end
     end

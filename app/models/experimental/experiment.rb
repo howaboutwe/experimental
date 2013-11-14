@@ -96,8 +96,12 @@ module Experimental
       !removed? && !ended?
     end
 
+    def self.available
+      where(removed_at: nil)
+    end
+
     def self.active
-      where(['removed_at IS NULL AND (end_date IS NULL OR ? <= end_date)', Time.now])
+      available.where(['end_date IS NULL OR ? <= end_date', Time.now])
     end
 
     def to_sql_formula(subject_table = "users")
