@@ -1,14 +1,22 @@
 module Experimental
+  # Test helpers for applications that use Experimental.
+  #
+  # For popular test frameworks, simply require the appropriate
+  # experimental/test/*.rb file. If those doesn't cover you, check one of those
+  # to see how to hook up your favorite framework.
   module Test
-    def self.included(base)
-      base.before do
-        Experimental.source = Experimental::Source::Configuration.new
-        Experimental.overrides.reset
-      end
+    # Call this once to initialize Experimental for your test suite.
+    #
+    # Calling it again isn't harmful, just unnecessary.
+    def self.initialize
+      return if @initialized
+      Experimental.source = Experimental::Source::Configuration.new
+      @initialized = true
+    end
 
-      base.after do
-        Experimental.overrides.reset
-      end
+    # Call this before each test.
+    def self.setup
+      Experimental.overrides.reset
     end
 
     # Force the given subject into the given +bucket+ of the given +experiment+.
