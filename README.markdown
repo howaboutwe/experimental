@@ -231,34 +231,39 @@ frameworks. Setup instructions for each framework are in the following sections.
 Once set up, you can then force a subject into a bucket for an experiment as
 follows:
 
-    set_experimental_bucket(subject, :my_experiment, 1)
+```ruby
+set_experimental_bucket(subject, :my_experiment, 1)
+```
 
 If you set the bucket (1 in the above example) to `nil`, this means set the
 subject to be out of the experiment (the default state).
 
 ### Minitest
+```ruby
+require 'experimental/test/unit'
 
-    require 'experimental/test/unit'
-
-    class MyTest < Test::Unit::TestCase
-      include Experimental::Test::Unit
-      ...
-    end
+class MyTest < Test::Unit::TestCase
+  include Experimental::Test::Unit
+  ...
+end
+```
 
 Note that if you define a `setup` method, then you must remember to call
 `super` (always good practice in general).
 
 ### RSpec
+```ruby
+require 'experimental/test/rspec'
 
-    require 'experimental/test/rspec'
-
-    RSpec.configure do |config|
-      config.include Experimental::Test::RSpec
-    end
+RSpec.configure do |config|
+  config.include Experimental::Test::RSpec
+end
+```
 
 ### Cucumber
-
-    require 'experimental/test/cucumber'
+```ruby
+require 'experimental/test/cucumber'
+```
 
 ## Developer Workflow
 
