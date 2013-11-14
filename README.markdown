@@ -220,73 +220,45 @@ Then run `rake experimental:sync`
 
 ## Testing
 
-### Setup
-in `spec_helper.rb` (after inclusion of ActiveSupport)
+In your test suite, you typically want to have an neutral starting state across
+all your tests. For experiments, this means all subjects are out of all
+experiments. You then opt a particular subject into a particular bucket for any
+experiment as your test requires.
 
-```ruby
-require 'experimental/rspec_helpers'
-```
+Experimental ships with support to do this in a number of popular test
+frameworks. Setup instructions for each framework are in the following sections.
 
-*You may want to force experiments off for all tests by default*
-```ruby
-config.before(:each) do
-  User.any_instance.stub(:in_experiment?).and_return(false)
-end
-```
+Once set up, you can then force a subject into a bucket for an experiment as
+follows:
 
-### Testing experiments
+    set_experimental_bucket(subject, :my_experiment, 1)
 
-Include the Rspec helpers in your spec class or spec_helper
-```ruby
-include Experimental::RspecHelpers
-```
+If you set the bucket (1 in the above example) to `nil`, this means set the
+subject to be out of the experiment (the default state).
 
-Shared contexts are available for in_experiment? and in_bucket?
-```ruby
-include_context "in experiment"
-include_context "not in experiment"
+### Minitest
 
-include_context "in experiment bucket 0"
-include_context "in experiment bucket 1"
-```
+    require 'experimental/test/unit'
 
-Helper methods are also available:
+    class MyTest < Test::Unit::TestCase
+      include Experimental::Test::Unit
+      ...
+    end
 
-**is_in_experiment**
-```ruby
-# first param is true for in experiment, false for not in experiment
-# second param is the experiment name
-# third param is the subject object
-is_in_experiment(true, :my_experiment, my_subject)
+Note that if you define a `setup` method, then you must remember to call
+`super` (always good practice in general).
 
-# if user and experiment_name are defined, you can do
-let(:experiment_name) { :my_experiment }
-let(:user) { User.new }
-is_in_experiment # true if in experiment
-is_in_experiment(false) # true if NOT in experiment
-```
+### RSpec
 
-**is_not_in_experiment**
-```ruby
-# first param is name of experiment
-# second param is subject object
-is_not_in_experiment(:my_experiment, my_subject)
+    require 'experimental/test/rspec'
 
-# if user and experiment_name are defined, you can do
-let(:experiment_name) { :my_experiment }
-let(:user) { User.new }
-is_not_in_experiment
-```
+    RSpec.configure do |config|
+      config.include Experimental::Test::RSpec
+    end
 
-**has_experiment_bucket**
-```ruby
-has_experiment_bucket(1, :my_experiment, my_subject)
+### Cucumber
 
-# if user and experiment_name are defined, you can do
-let(:experiment_name) { :my_experiment }
-let(:user) { User.new }
-has_experiment_bucket(1)
-```
+    require 'experimental/test/cucumber'
 
 ## Developer Workflow
 
