@@ -47,6 +47,7 @@ module Experimental
 
     def experiments_create
       @experiment = Experiment.new(params[:experimental_experiment])
+      @experiment.admin = true
       @experiment.start_date = Time.now
 
       if @experiment.save

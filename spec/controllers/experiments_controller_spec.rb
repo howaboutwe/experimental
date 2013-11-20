@@ -155,6 +155,17 @@ describe ExperimentsController do
         post :create, valid_params
       end
 
+      it "sets the admin flag" do
+        time = Time.now
+        Time.stub(:now).and_return(time)
+
+        exp = mock_model(Experimental::Experiment).as_null_object
+        Experimental::Experiment.should_receive(:new).and_return(exp)
+        exp.should_receive(:admin=).with(true)
+
+        post :create, valid_params
+      end
+
       it "redirects to the index template" do
         post :create, valid_params
         response.should redirect_to(experiments_path)

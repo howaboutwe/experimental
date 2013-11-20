@@ -23,6 +23,7 @@ module Experimental
         scope = Experimental::Experiment.in_code
         scope = scope.where('id NOT IN (?)', active.map(&:id)) unless active.empty?
         scope.find_each do |experiment|
+          next if experiment.admin?
           logger.info "  * removing #{experiment.name}"
           experiment.remove
         end

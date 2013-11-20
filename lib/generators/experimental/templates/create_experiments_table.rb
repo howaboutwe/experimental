@@ -8,6 +8,7 @@ class CreateExperimentsTable < ActiveRecord::Migration
       t.integer :winning_bucket
       t.text :notes, limit: 256
       t.string :population
+      t.boolean :admin, null: false, default: false
       t.datetime :removed_at
       t.timestamps
     end
