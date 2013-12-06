@@ -25,7 +25,7 @@ describe Experimental::Loader do
 
   context "when the attributes of an existing experiment have changed" do
     before do
-      FactoryGirl.create(:experiment, name: 'aa', num_buckets: 5)
+      FactoryGirl.create(:experiment, name: 'aa', num_buckets: 5, population: 'a')
       Experimental.experiment_data = {'aa' => {'num_buckets' => 4}}
     end
 
@@ -34,6 +34,7 @@ describe Experimental::Loader do
       experiments = Experimental::Experiment.all
       experiments.map(&:name).should == ['aa']
       experiments.map(&:num_buckets).should == [4]
+      experiments.map(&:population).should == [nil]
     end
 
     it "logs it" do
