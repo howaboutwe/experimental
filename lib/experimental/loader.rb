@@ -15,7 +15,8 @@ module Experimental
         active = Experimental.experiment_data.map do |name, attributes|
           experiment = Experimental::Experiment.find_or_initialize_by_name(name)
           logger.info "  * #{experiment.id ? 'updating' : 'creating'} #{name}"
-          experiment.assign_attributes(attributes)
+          defaults = {'num_buckets' => nil, 'notes' => nil, 'population' => nil}
+          experiment.assign_attributes(defaults.merge(attributes))
           experiment.start_date ||= Time.now
           experiment.tap(&:save!)
         end
