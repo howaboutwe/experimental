@@ -10,6 +10,7 @@ module Experimental
     # Calling it again isn't harmful, just unnecessary.
     def self.initialize
       return if @initialized
+      @initial_source = Experimental.source
       Experimental.source = Experimental::Source::Configuration.new
       @initialized = true
     end
@@ -17,6 +18,11 @@ module Experimental
     # Call this before each test.
     def self.setup
       Experimental.overrides.reset
+    end
+
+    def self.teardown
+      Experimental.source = @initial_source
+      @initialized = false
     end
 
     # Force the given subject into the given +bucket+ of the given +experiment+.
