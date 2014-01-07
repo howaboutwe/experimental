@@ -2,20 +2,22 @@ source 'https://rubygems.org/'
 gemspec
 
 # jquery-rails is used by the dummy application
-gem "jquery-rails"
+gem 'jquery-rails'
 
 #for activeadmin testing
-gem "activeadmin"
-gem "sass-rails"
+gem 'activeadmin'
 gem 'coffee-rails'
+gem 'sass-rails'
+gem 'sqlite3'
+gem 'timecop'
 
 group :test do
+  gem 'capybara'
   gem 'factory_girl'
   gem 'shoulda-matchers'
-  gem 'capybara'
 end
 
 group :test, :development do
-  gem 'rspec-rails'
   gem 'pry'
+  gem 'rspec-rails'
 end

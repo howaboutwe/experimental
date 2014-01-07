@@ -17,11 +17,4 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "rails", "<= 5.0"
   gem.add_dependency 'jquery-rails'
-
-  gem.add_development_dependency "sqlite3"
-  gem.add_development_dependency "timecop"
-  gem.add_development_dependency 'rspec-rails'
-  gem.add_development_dependency 'activeadmin'
-  gem.add_development_dependency 'sass-rails'
-  gem.add_development_dependency 'coffee-rails'
 end
