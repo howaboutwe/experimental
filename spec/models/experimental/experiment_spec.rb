@@ -74,9 +74,7 @@ describe Experimental::Experiment do
   it { should validate_numericality_of(:num_buckets) }
   it { should_not allow_value(-1).for(:num_buckets) }
   it { should_not allow_value(0).for(:num_buckets) }
-  it { should_not allow_value(1).for(:num_buckets) }
-  it { should allow_value(2).for(:num_buckets) }
-  it { should allow_value(3).for(:num_buckets) }
+  it { should allow_value(1).for(:num_buckets) }
 
   describe "scopes" do
     let(:exp_not_removed) { FactoryGirl.create(:experiment) }
