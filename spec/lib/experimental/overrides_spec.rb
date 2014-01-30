@@ -18,17 +18,44 @@ describe Experimental::Overrides do
       overrides[subject, :my_experiment] = nil
       overrides.include?(subject, :my_experiment).should be_true
     end
+
+    it "is true if a default is set" do
+      overrides.set_default(1)
+      overrides.include?(subject, :my_experiment).should be_true
+    end
+
+    it "is true even if the default is set to nil" do
+      overrides.set_default(nil)
+      overrides.include?(subject, :my_experiment).should be_true
+    end
   end
 
   describe "#[]" do
-    it "returns nil if no override has been set" do
+    it "returns nil if no override or default has been set" do
       overrides[subject, :my_experiment] = nil
       overrides[subject, :my_experiment].should be_nil
+    end
+
+    it "returns the default if present and no override has been set" do
+      overrides.set_default(1)
+      overrides[subject, :my_experiment].should == 1
     end
 
     it "returns the bucket number if a bucket was set" do
       overrides[subject, :my_experiment] = 1
       overrides[subject, :my_experiment].should == 1
+    end
+
+    it "returns the bucket number, even if nil and a non-nil default is set" do
+      overrides.set_default(1)
+      overrides[subject, :my_experiment] = nil
+      overrides[subject, :my_experiment].should be_nil
+    end
+
+    it "favors an explicit bucket over the default" do
+      overrides.set_default(1)
+      overrides[subject, :my_experiment] = 2
+      overrides[subject, :my_experiment].should == 2
     end
   end
 

@@ -4,16 +4,27 @@ module Experimental
       @overrides ||= Hash.new do |experiment_overrides, experiment_name|
         experiment_overrides[experiment_name] = {}
       end
+      @default_set = false
+    end
+
+    def set_default(value)
+      @default_set = true
+      @default = value
     end
 
     def include?(subject, experiment_name)
+      return true if @default_set
       experiment_name = experiment_name.to_s
       @overrides.key?(experiment_name) && @overrides[experiment_name].key?(subject)
     end
 
     def [](subject, experiment_name)
       experiment_name = experiment_name.to_s
-      @overrides[experiment_name][subject]
+      if @overrides[experiment_name].key?(subject)
+        @overrides[experiment_name][subject]
+      else
+        @default
+      end
     end
 
     def []=(subject, experiment_name, bucket)
@@ -23,6 +34,8 @@ module Experimental
 
     def reset
       @overrides.clear
+      @default_set = false
+      @default = nil
     end
   end
 end

@@ -15,9 +15,12 @@ module Experimental
       @initialized = true
     end
 
-    # Call this before each test.
+    # Call this before each test. It provides a deterministic default: all
+    # subjects are out of all experiments. Opt subjects into experiments using
+    # #set_experimental_bucket.
     def self.setup
       Experimental.overrides.reset
+      Experimental.overrides.set_default(nil)
     end
 
     def self.teardown
