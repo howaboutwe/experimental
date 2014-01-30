@@ -5,7 +5,7 @@ module Experimental
     attr_accessible :name, :num_buckets, :notes, :population
 
     validates_presence_of :name, :num_buckets
-    validates_numericality_of :num_buckets, :greater_than_or_equal_to => 2
+    validates_numericality_of :num_buckets, :greater_than_or_equal_to => 1
     validates_numericality_of :winning_bucket,
       :greater_than_or_equal_to => 0,
       :less_than => :num_buckets,
