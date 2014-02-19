@@ -156,7 +156,7 @@ describe Experimental::Subject do
           end
         end
 
-        context "when the user is in bucket 1 of the experiment" do
+        context "when the user is in bucket 0 of the experiment" do
           before do
             user.stub(experiment_bucket: 0)
           end
