@@ -136,4 +136,44 @@ describe Experimental::Subject do
       test_obj.in_experiment?(exp_name2).should be_true
     end
   end
+
+  describe "#method_missing" do
+    let(:user) { FactoryGirl.create(:user) }
+
+    describe "magic predicates" do
+      context "when the experiment exists" do
+        before do
+          FactoryGirl.create(:experiment, name: "cool_experiment")
+        end
+
+        context "when the user is in bucket 1 of the experiment" do
+          before do
+            user.stub(experiment_bucket: 1)
+          end
+
+          it "is true" do
+            user.cool_experiment?.should be_true
+          end
+        end
+
+        context "when the user is in bucket 1 of the experiment" do
+          before do
+            user.stub(experiment_bucket: 0)
+          end
+
+          it "is true" do
+            user.cool_experiment?.should be_false
+          end
+        end
+      end
+
+      context "when the experiment does not exist" do
+        it "raises a NoMethodError" do
+          expect do
+            user.blah_experiment?
+          end.to raise_error(NoMethodError)
+        end
+      end
+    end
+  end
 end
