@@ -72,6 +72,14 @@ module Experimental
       save
     end
 
+    def set_valid_start_date(date)
+      set_valid_date(:start_date, date)
+    end
+
+    def set_valid_end_date(date)
+      set_valid_date(:end_date, date)
+    end
+
     def remove
       result = false
 
@@ -114,6 +122,25 @@ module Experimental
     end
 
     private
+
+    def set_valid_date(col, date)
+      if is_valid_date?(date)
+        self.send("#{col}=", date)
+      else
+        errors.add(col, "is not a valid date")
+      end
+    end
+
+    def is_valid_date?(date)
+      if date.is_a?(String) && !date.blank?
+        begin
+          DateTime.parse(date)
+        rescue ArgumentError
+          return false
+        end
+      end
+      true
+    end
 
     def population_filter
       @population_filter ||= self.class.find_population(population)
