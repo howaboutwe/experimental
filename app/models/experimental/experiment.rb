@@ -4,12 +4,14 @@ module Experimental
 
     attr_accessible :name, :num_buckets, :notes, :population
 
+
     validates_presence_of :name, :num_buckets
     validates_numericality_of :num_buckets, :greater_than_or_equal_to => 1
     validates_numericality_of :winning_bucket,
       :greater_than_or_equal_to => 0,
       :less_than => :num_buckets,
       :if => :ended?
+    validate :has_valid_dates
 
     def self.in_code
       where(:removed_at => nil)
@@ -72,14 +74,6 @@ module Experimental
       save
     end
 
-    def set_valid_start_date(date)
-      set_valid_date(:start_date, date)
-    end
-
-    def set_valid_end_date(date)
-      set_valid_date(:end_date, date)
-    end
-
     def remove
       result = false
 
@@ -123,23 +117,17 @@ module Experimental
 
     private
 
-    def set_valid_date(col, date)
-      if is_valid_date?(date)
-        self.send("#{col}=", date)
-      else
-        errors.add(col, "is not a valid date")
-      end
-    end
-
-    def is_valid_date?(date)
-      if date.is_a?(String) && !date.blank?
-        begin
-          DateTime.parse(date)
-        rescue ArgumentError
-          return false
+    def has_valid_dates
+      %w(start_date end_date).each do |attr|
+        val = read_attribute_before_type_cast(attr)
+        if !val.blank? && val.is_a?(String)
+          begin
+            DateTime.parse(val)
+          rescue ArgumentError
+            errors.add(attr, "is not a valid date")
+          end
         end
       end
-      true
     end
 
     def population_filter

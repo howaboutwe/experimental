@@ -75,23 +75,10 @@ describe Experimental::Experiment do
   it { should_not allow_value(-1).for(:num_buckets) }
   it { should_not allow_value(0).for(:num_buckets) }
   it { should allow_value(1).for(:num_buckets) }
-
-  describe "validates dates" do
-    it "should not allow invalid start_date" do
-      experiment.set_valid_start_date('bad')
-      experiment.errors[:start_date].should include "is not a valid date"
-    end
-
-    it "should not allow invalid end_date" do
-      experiment.set_valid_end_date('bad')
-      experiment.errors[:end_date].should include "is not a valid date"
-    end
-
-    it "should set a valid date" do
-      start_date = '2014-01-01 10:00:00'
-      experiment.set_valid_start_date(start_date)
-      experiment.start_date.should == start_date
-    end
+  [:start_date,:end_date].each do |attr|
+    it { should_not allow_value('bad').for(attr) }
+    it { should allow_value('2014-01-01 10:00:00').for(attr) }
+    it { should allow_value(Time.now).for(attr) }
   end
 
   describe "scopes" do
