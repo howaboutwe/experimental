@@ -5,7 +5,7 @@ require 'experimental/version'
 Gem::Specification.new do |gem|
   gem.name          = 'experimental'
   gem.version       = Experimental::VERSION
-  gem.authors       = ['HowAboutWe.com', 'Rebecca Miller-Webster', 'Bryan Woods']
+  gem.authors       = ['HowAboutWe.com', 'Rebecca Miller-Webster', 'Bryan Woods', 'Andrew Watkins']
   gem.email         = ['dev@howaboutwe.com']
   gem.description   = "AB Test framework for Rails"
   gem.summary       = "Adds support for database-backed AB tests in Rails apps"
