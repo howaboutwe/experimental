@@ -75,6 +75,13 @@ describe Experimental::Experiment do
   it { should_not allow_value(-1).for(:num_buckets) }
   it { should_not allow_value(0).for(:num_buckets) }
   it { should allow_value(1).for(:num_buckets) }
+  [:start_date,:end_date].each do |attr|
+    it { should_not allow_value('bad').for(attr) }
+    it { should allow_value('2014-01-01 10:00:00').for(attr) }
+    it { should allow_value(Time.now).for(attr) }
+    it { should allow_value(nil).for(attr) }
+    it { should allow_value(" ").for(attr) }
+  end
 
   describe "scopes" do
     let(:exp_not_removed) { FactoryGirl.create(:experiment) }

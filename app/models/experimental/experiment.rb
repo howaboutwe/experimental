@@ -4,12 +4,14 @@ module Experimental
 
     attr_accessible :name, :num_buckets, :notes, :population
 
+
     validates_presence_of :name, :num_buckets
     validates_numericality_of :num_buckets, :greater_than_or_equal_to => 1
     validates_numericality_of :winning_bucket,
       :greater_than_or_equal_to => 0,
       :less_than => :num_buckets,
       :if => :ended?
+    validate :has_valid_dates
 
     def self.in_code
       where(:removed_at => nil)
@@ -114,6 +116,17 @@ module Experimental
     end
 
     private
+
+    def has_valid_dates
+      %w(start_date end_date).each do |attribute|
+        value = read_attribute_before_type_cast(attribute)
+        begin
+          value.try(:to_time)
+        rescue ArgumentError
+          errors.add(attribute, "is not a valid date")
+        end
+      end
+    end
 
     def population_filter
       @population_filter ||= self.class.find_population(population)
