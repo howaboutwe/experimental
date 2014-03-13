@@ -120,7 +120,7 @@ module Experimental
     def has_valid_dates
       %w(start_date end_date).each do |attr|
         val = read_attribute_before_type_cast(attr)
-        if !val.blank? && val.is_a?(String)
+        if val.present? && val.is_a?(String)
           begin
             DateTime.parse(val)
           rescue ArgumentError
