@@ -118,14 +118,12 @@ module Experimental
     private
 
     def has_valid_dates
-      %w(start_date end_date).each do |attr|
-        val = read_attribute_before_type_cast(attr)
-        if val.present? && val.is_a?(String)
-          begin
-            DateTime.parse(val)
-          rescue ArgumentError
-            errors.add(attr, "is not a valid date")
-          end
+      %w(start_date end_date).each do |attribute|
+        value = read_attribute_before_type_cast(attribute)
+        begin
+          value.try(:to_time)
+        rescue ArgumentError
+          errors.add(attribute, "is not a valid date")
         end
       end
     end
