@@ -1,5 +1,5 @@
 module Experimental
-  VERSION = [0, 2, 4]
+  VERSION = [0, 2, 5]
 
   class << VERSION
     include Comparable
