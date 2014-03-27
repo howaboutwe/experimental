@@ -124,6 +124,12 @@ describe Experimental::Subject do
     end
   end
 
+  describe "#experiment_seed_value" do
+    it "returns the subject ID by default" do
+      user.experiment_seed_value.should == user.id
+    end
+  end
+
   context "when obj isn't user" do
     let(:test_obj) { FactoryGirl.create(:user) }
     let(:exp_name2) { "exp2" }
