@@ -15,5 +15,9 @@ module Experimental
     def in_bucket?(name, bucket)
       in_experiment?(name) && experiment_bucket(name) == bucket
     end
+
+    def experiment_seed_value
+      id
+    end
   end
 end

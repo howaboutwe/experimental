@@ -111,7 +111,7 @@ module Experimental
     end
 
     def bucket_number(subject)
-      top_8 = Digest::SHA1.hexdigest("#{name}#{subject.id}")[0..7]
+      top_8 = Digest::SHA1.hexdigest("#{name}#{subject.experiment_seed_value}")[0..7]
       top_8.to_i(16) % num_buckets
     end
 
