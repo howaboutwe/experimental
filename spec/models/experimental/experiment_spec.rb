@@ -570,7 +570,7 @@ describe Experimental::Experiment do
       end
     end
 
-    it "uses the experimental_seed_value for computation" do
+    it "uses the experiment_seed_value for computation" do
       experiment.bucket(user).should == 0
       user.stub(:experiment_seed_value) { 89 }
       experiment.bucket(user).should == 1
