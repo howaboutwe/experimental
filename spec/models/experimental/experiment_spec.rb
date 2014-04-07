@@ -384,6 +384,24 @@ describe Experimental::Experiment do
     end
   end
 
+  describe "#unstart" do
+    it "removes any existing start and end date, and winning bucket" do
+      experiment = FactoryGirl.create(:experiment, :ended, winning_bucket: 1)
+      experiment.unstart.should be_true
+
+      experiment.should_not be_started
+      experiment.start_date.should be_nil
+      experiment.end_date.should be_nil
+      experiment.winning_bucket.should be_nil
+    end
+
+    it "restores the experiment if it was removed" do
+      experiment = FactoryGirl.create(:experiment, :removed)
+      experiment.unstart.should be_true
+      experiment.should_not be_removed
+    end
+  end
+
   describe "#remove" do
     it "updates without protection" do
       experiment = FactoryGirl.create(:experiment)
@@ -468,42 +486,62 @@ describe Experimental::Experiment do
   end
 
   describe ".active and #active?" do
-    let(:experiment) { FactoryGirl.create(:experiment) }
-
-    context "the experiment is removed" do
-      before { experiment.update_attribute(:removed_at, 1.second.ago) }
-
-      it "is not active" do
-        Experimental::Experiment.active.should == []
-        experiment.should_not be_active
-      end
+    it "excludes experiments which have no start date" do
+      experiment = FactoryGirl.create(:experiment, :unstarted)
+      Experimental::Experiment.active.should == []
+      experiment.should_not be_active
     end
 
-    context "the experiment is not removed" do
-      context "the experiment has no end date" do
-        it "is active" do
-          Experimental::Experiment.active.should == [experiment]
-          experiment.should be_active
-        end
-      end
+    it "excludes experiments which will start in the future" do
+      experiment = FactoryGirl.create(:experiment, :will_start)
+      Experimental::Experiment.active.should == []
+      experiment.should_not be_active
+    end
 
-      context "the experiment will end in the future" do
-        before { experiment.update_attribute(:end_date, 1.second.from_now) }
+    it "includes started experiments which have no end date" do
+      experiment = FactoryGirl.create(:experiment, :started)
+      Experimental::Experiment.active.should == [experiment]
+      experiment.should be_active
+    end
 
-        it "is active" do
-          Experimental::Experiment.active.should == [experiment]
-          experiment.should be_active
-        end
-      end
+    it "includes started experiments which will end in the future" do
+      experiment = FactoryGirl.create(:experiment, :will_end)
+      Experimental::Experiment.active.should == [experiment]
+      experiment.should be_active
+    end
 
-      context "the experiment has ended" do
-        before { experiment.update_attribute(:end_date, 1.second.ago) }
+    it "excludes ended experiments" do
+      experiment = FactoryGirl.create(:experiment, :ended)
+      Experimental::Experiment.active.should == []
+      experiment.should_not be_active
+    end
 
-        it "returns false" do
-          Experimental::Experiment.active.should == []
-          experiment.should_not be_active
-        end
-      end
+    it "excludes removed experiments" do
+      experiment = FactoryGirl.create(:experiment, :removed)
+      Experimental::Experiment.active.should == []
+      experiment.should_not be_active
+    end
+  end
+
+  describe ".available" do
+    it "excludes removed experiments" do
+      experiment = FactoryGirl.create(:experiment, :removed)
+      Experimental::Experiment.available.should == []
+    end
+
+    it "includes active experiments" do
+      experiment = FactoryGirl.create(:experiment)
+      Experimental::Experiment.available.should == [experiment]
+    end
+
+    it "includes even ended experiments" do
+      experiment = FactoryGirl.create(:experiment, :ended)
+      Experimental::Experiment.available.should == [experiment]
+    end
+
+    it "includes even unstarted experiments" do
+      experiment = FactoryGirl.create(:experiment)
+      Experimental::Experiment.available.should == [experiment]
     end
   end
 
@@ -540,32 +578,21 @@ describe Experimental::Experiment do
   end
 
   describe "#bucket" do
-    context "when the experiment has been removed" do
-      before { experiment.stub(removed?: true, winning_bucket: 1) }
-
-      it "does not raise an exception" do
-        expect { experiment.bucket(user) }.to_not raise_error
-      end
-
-      it "returns the winning bucket" do
-        experiment.bucket(user).should == experiment.winning_bucket
-      end
+    it "returns the winning bucket if the experiment has ended" do
+      experiment = FactoryGirl.create(:experiment, :ended, winning_bucket: 1)
+      experiment.bucket(user).should == experiment.winning_bucket
     end
 
-    context "when the bucket has been forced to a number" do
-      before { Experimental.overrides[user, experiment.name] = 2 }
+    context "when the bucket has been overridden" do
       after { Experimental.overrides.reset }
 
-      it "returns the bucket" do
+      it "returns the forced bucket" do
+        Experimental.overrides[user, experiment.name] = 2
         experiment.bucket(user).should == 2
       end
-    end
 
-    context "when the bucket has been forced to nil" do
-      before { Experimental.overrides[user, experiment.name] = nil }
-      after { Experimental.overrides.reset }
-
-      it "returns nil" do
+      it "returns nil if forced to nil" do
+        Experimental.overrides[user, experiment.name] = nil
         experiment.bucket(user).should be_nil
       end
     end
@@ -574,6 +601,17 @@ describe Experimental::Experiment do
       experiment.bucket(user).should == 0
       user.stub(:experiment_seed_value) { 89 }
       experiment.bucket(user).should == 1
+    end
+
+    it "returns nil if the experiment has not been started yet" do
+      experiment = FactoryGirl.create(:experiment, :unstarted)
+      experiment.bucket(user).should be_nil
+    end
+
+    it "returns the computed bucket number if the experiment is in progress" do
+      experiment = FactoryGirl.create(:experiment, :started)
+      experiment.stub(:bucket_number).with(user).and_return(2)
+      experiment.bucket(user).should == 2
     end
   end
 end

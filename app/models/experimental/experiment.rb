@@ -42,7 +42,7 @@ module Experimental
         winning_bucket
       elsif Experimental.overrides.include?(subject, name)
         Experimental.overrides[subject, name]
-      else
+      elsif started?
         bucket_number(subject)
       end
     end
@@ -60,6 +60,14 @@ module Experimental
     def end(winning_num)
       self.winning_bucket = winning_num
       self.end_date = Time.now
+      save
+    end
+
+    def unstart
+      self.start_date = nil
+      self.end_date = nil
+      self.removed_at = nil
+      self.winning_bucket = nil
       save
     end
 
@@ -90,12 +98,16 @@ module Experimental
       !removed_at.nil?
     end
 
+    def started?
+      start_date.present? && start_date <= Time.now
+    end
+
     def ended?
       !end_date.nil? && Time.now > end_date
     end
 
     def active?
-      !removed? && !ended?
+      !removed? && started? && !ended?
     end
 
     def self.available
@@ -103,7 +115,8 @@ module Experimental
     end
 
     def self.active
-      available.where(['end_date IS NULL OR ? <= end_date', Time.now])
+      now = Time.now
+      available.where('start_date < ? AND end_date IS NULL OR ? <= end_date', now, now)
     end
 
     def to_sql_formula(subject_table = "users")

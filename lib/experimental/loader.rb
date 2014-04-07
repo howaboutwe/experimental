@@ -14,10 +14,17 @@ module Experimental
       Experimental::Experiment.transaction do
         active = Experimental.experiment_data.map do |name, attributes|
           experiment = Experimental::Experiment.find_or_initialize_by_name(name)
-          logger.info "  * #{experiment.id ? 'updating' : 'creating'} #{name}"
+
+          unstarted = attributes.delete('unstarted')
           defaults = {'num_buckets' => nil, 'notes' => nil, 'population' => nil}
           experiment.assign_attributes(defaults.merge(attributes))
-          experiment.start_date ||= Time.now
+          if unstarted
+            experiment.start_date = nil
+          else
+            experiment.start_date ||= Time.current
+          end
+
+          logger.info "  * #{experiment.id ? 'updating' : 'creating'} #{name}"
           experiment.tap(&:save!)
         end
 

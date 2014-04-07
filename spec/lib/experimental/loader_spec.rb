@@ -4,6 +4,9 @@ describe Experimental::Loader do
   before { Experimental.reset }
   after { Experimental.reset }
 
+  before { Timecop.freeze(Time.utc(2001, 2, 3, 4, 5, 6)) }
+  after { Timecop.return }
+
   let(:log) { StringIO.new }
   let(:loader) { Experimental::Loader.new(logger: Logger.new(log)) }
 
@@ -17,6 +20,20 @@ describe Experimental::Loader do
       experiments.map(&:num_buckets).should == [5]
     end
 
+    it "starts the experiment by default" do
+      loader.sync
+      experiment = Experimental::Experiment.all.first
+      experiment.should be_started
+      experiment.start_date.should == Time.now.utc
+    end
+
+    it "creates an unstarted experiment if unstarted is set" do
+      Experimental.experiment_data['aa']['unstarted'] = true
+      loader.sync
+      experiment = Experimental::Experiment.all.first
+      experiment.should_not be_started
+    end
+
     it "logs it" do
       loader.sync
       log.string.should include('creating aa')
@@ -24,8 +41,11 @@ describe Experimental::Loader do
   end
 
   context "when the attributes of an existing experiment have changed" do
-    before do
+    let!(:experiment) do
       FactoryGirl.create(:experiment, name: 'aa', num_buckets: 5, population: 'a')
+    end
+
+    before do
       Experimental.experiment_data = {'aa' => {'num_buckets' => 4}}
     end
 
@@ -35,6 +55,32 @@ describe Experimental::Loader do
       experiments.map(&:name).should == ['aa']
       experiments.map(&:num_buckets).should == [4]
       experiments.map(&:population).should == [nil]
+    end
+
+    it "does not update the start time if it's already started" do
+      original_start_date = 1.day.ago
+      experiment.update_attribute(:start_date, original_start_date)
+
+      loader.sync
+
+      experiment = Experimental::Experiment.all.first
+      experiment.should be_started
+      experiment.start_date.should == original_start_date
+    end
+
+    it "starts the experiment by default if necessary" do
+      experiment.unstart
+      loader.sync
+      experiment = Experimental::Experiment.all.first
+      experiment.should be_started
+      experiment.start_date.should == Time.current
+    end
+
+    it "creates an unstarted experiment if unstarted is set" do
+      Experimental.experiment_data['aa']['unstarted'] = true
+      loader.sync
+      experiment = Experimental::Experiment.all.first
+      experiment.should_not be_started
     end
 
     it "logs it" do
