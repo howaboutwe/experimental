@@ -34,5 +34,9 @@ module Experimental
     def set_experimental_bucket(subject, experiment_name, bucket)
       Experimental.overrides[subject, experiment_name] = bucket
     end
+
+    autoload :Cucumber, 'experimental/test/cucumber'
+    autoload :RSpec, 'experimental/test/rspec'
+    autoload :Unit, 'experimental/test/unit'
   end
 end
