@@ -78,7 +78,7 @@ describe ExperimentsController do
     context "when the experiment exists" do
       let(:exp) { Experimental::Experiment.new }
       before do
-        Experimental::Experiment.stub!(:find).and_return(exp)
+        Experimental::Experiment.stub(find: exp)
       end
 
       def post_set_winner

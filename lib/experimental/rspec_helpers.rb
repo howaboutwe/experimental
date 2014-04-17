@@ -6,8 +6,7 @@ module Experimental
       obj ||= user
       name ||= experiment_name
 
-      obj.should_receive(:in_experiment?).any_number_of_times.
-        with(name).and_return(val)
+      obj.stub(:in_experiment?).with(name).and_return(val)
     end
 
     def is_not_in_experiment(name = nil, obj = nil)
@@ -21,8 +20,7 @@ module Experimental
       obj ||= user
       name ||= experiment_name
 
-      obj.should_receive(:experiment_bucket).any_number_of_times.
-        with(name).and_return(bucket)
+      obj.stub(:experiment_bucket).with(name).and_return(bucket)
     end
   end
 

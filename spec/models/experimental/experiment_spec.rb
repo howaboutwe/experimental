@@ -60,7 +60,7 @@ describe Experimental::Experiment do
 
   def stub_sha1(result, name = "test", id = nil)
     id ||= result+1
-    Digest::SHA1.stub!(:hexdigest).with("#{name}#{id}").and_return(result.to_s)
+    Digest::SHA1.stub(:hexdigest).with("#{name}#{id}").and_return(result.to_s)
   end
 
   def set_winning_bucket_and_check_validity(bucket_val, valid)
@@ -115,7 +115,7 @@ describe Experimental::Experiment do
 
   describe "#to_sql_formula" do
     it "returns correct sql fragment for users table" do
-      Experimental::Experiment.stub(:find, 1).and_return(
+      Experimental::Experiment.stub(:find).with(1).and_return(
         FactoryGirl.create(:experiment, id: 1, name: "experiment", num_buckets: 2)
       )
 
@@ -124,7 +124,7 @@ describe Experimental::Experiment do
     end
 
     it "returns correct sql fragment for someother table" do
-      Experimental::Experiment.stub(:find, 1).and_return(
+      Experimental::Experiment.stub(:find).with(1).and_return(
         FactoryGirl.create(:experiment, id: 1, name: "experiment", num_buckets: 2)
       )
 

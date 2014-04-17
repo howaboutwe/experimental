@@ -35,7 +35,7 @@ describe "experimental/_new" do
   context "when the experiment has errors" do
     before do
       experiment.stub(:errors).
-        and_return(mock(ActiveModel::Errors).as_null_object)
+        and_return(double(ActiveModel::Errors).as_null_object)
     end
 
     it "renders errors" do
