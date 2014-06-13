@@ -3,7 +3,13 @@ ENV["RAILS_ENV"] ||= 'test'
 
 ENGINE_RAILS_ROOT = File.join(File.dirname(__FILE__), '../')
 
-require File.expand_path("../dummy/config/environment.rb",  __FILE__)
+require 'rails'
+if Rails::VERSION::MAJOR == 3
+  require File.expand_path("../dummy-rails3/config/environment.rb",  __FILE__)
+else
+  require File.expand_path("../dummy-rails4/config/environment.rb",  __FILE__)
+end
+
 require 'rspec/rails'
 require 'rspec/autorun'
 require 'pry'

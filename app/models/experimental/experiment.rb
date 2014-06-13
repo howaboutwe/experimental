@@ -2,8 +2,9 @@ module Experimental
   class Experiment < ActiveRecord::Base
     extend Population::Filter
 
-    attr_accessible :name, :num_buckets, :notes, :population
-
+    if ActiveRecord::VERSION::MAJOR < 4 || defined?(ProtectedAttributes)
+      attr_accessible :name, :num_buckets, :notes, :population
+    end
 
     validates_presence_of :name, :num_buckets
     validates_numericality_of :num_buckets, :greater_than_or_equal_to => 1
