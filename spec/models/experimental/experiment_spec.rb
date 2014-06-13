@@ -2,13 +2,13 @@ require 'spec_helper'
 
 shared_examples_for "user should be in experiment" do
   it "should say the user is in the experiment" do
-    experiment.in?(u).should be_true
+    experiment.in?(u).should be_truthy
   end
 end
 
 shared_examples_for "user should not be in experiment" do
   it "should say the user is not in the experiment" do
-    experiment.in?(u).should be_false
+    experiment.in?(u).should be_falsey
   end
 end
 
@@ -293,7 +293,7 @@ describe Experimental::Experiment do
         let(:winning_num) { 0 }
 
         it "should return true" do
-          experiment.end(winning_num).should be_true
+          experiment.end(winning_num).should be_truthy
         end
 
         it "should set winning bucket" do
@@ -312,7 +312,7 @@ describe Experimental::Experiment do
         let(:winning_num) { 8 }
 
         it "should return false" do
-          experiment.end(winning_num).should be_false
+          experiment.end(winning_num).should be_falsey
         end
       end
     end
@@ -323,7 +323,7 @@ describe Experimental::Experiment do
       let(:winning_num) { 0 }
 
       it "should return true" do
-        experiment.end(winning_num).should be_true
+        experiment.end(winning_num).should be_truthy
       end
 
       it "should set winning bucket" do
@@ -387,7 +387,7 @@ describe Experimental::Experiment do
   describe "#unstart" do
     it "removes any existing start and end date, and winning bucket" do
       experiment = FactoryGirl.create(:experiment, :ended, winning_bucket: 1)
-      experiment.unstart.should be_true
+      experiment.unstart.should be_truthy
 
       experiment.should_not be_started
       experiment.start_date.should be_nil
@@ -397,7 +397,7 @@ describe Experimental::Experiment do
 
     it "restores the experiment if it was removed" do
       experiment = FactoryGirl.create(:experiment, :removed)
-      experiment.unstart.should be_true
+      experiment.unstart.should be_truthy
       experiment.should_not be_removed
     end
   end
@@ -410,14 +410,14 @@ describe Experimental::Experiment do
         with(hash_including(:removed_at), { without_protection: true}).
         and_return(true)
 
-      experiment.remove.should be_true
+      experiment.remove.should be_truthy
     end
 
     context "the experiment has not been removed" do
       let(:experiment) { FactoryGirl.create(:experiment) }
       it "sets the removed_at timestamp to the current time" do
         expect {
-          experiment.remove.should be_true
+          experiment.remove.should be_truthy
         }.to change { experiment.removed_at }
       end
     end
@@ -429,7 +429,7 @@ describe Experimental::Experiment do
 
       it "does nothing" do
         expect {
-          experiment.remove.should be_false
+          experiment.remove.should be_falsey
         }.to_not change { experiment.removed_at }
       end
     end
@@ -442,7 +442,7 @@ describe Experimental::Experiment do
       before { experiment.stub(:removed_at).and_return(nil) }
 
       it "returns false" do
-        experiment.removed?.should be_false
+        experiment.removed?.should be_falsey
       end
     end
 
@@ -450,7 +450,7 @@ describe Experimental::Experiment do
       before { experiment.stub(:removed_at).and_return(Time.now) }
 
       it "returns true" do
-        experiment.removed?.should be_true
+        experiment.removed?.should be_truthy
       end
     end
   end
@@ -462,7 +462,7 @@ describe Experimental::Experiment do
       before { experiment.stub(:end_date).and_return(nil) }
 
       it "returns false" do
-        experiment.ended?.should be_false
+        experiment.ended?.should be_falsey
       end
     end
 
@@ -471,7 +471,7 @@ describe Experimental::Experiment do
         before { experiment.stub(:end_date).and_return(1.day.ago) }
 
         it "returns true" do
-          experiment.ended?.should be_true
+          experiment.ended?.should be_truthy
         end
       end
 
@@ -479,7 +479,7 @@ describe Experimental::Experiment do
         before { experiment.stub(:end_date).and_return(1.day.from_now) }
 
         it "returns false" do
-          experiment.ended?.should be_false
+          experiment.ended?.should be_falsey
         end
       end
     end
@@ -554,7 +554,7 @@ describe Experimental::Experiment do
       end
 
       it "is false" do
-        experiment.in?(user).should be_false
+        experiment.in?(user).should be_falsey
       end
     end
 
@@ -563,7 +563,7 @@ describe Experimental::Experiment do
       after { Experimental.overrides.reset }
 
       it "is true" do
-        experiment.in?(user).should be_true
+        experiment.in?(user).should be_truthy
       end
     end
 
@@ -572,7 +572,7 @@ describe Experimental::Experiment do
       after { Experimental.overrides.reset }
 
       it "is false" do
-        experiment.in?(user).should be_false
+        experiment.in?(user).should be_falsey
       end
     end
   end

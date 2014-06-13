@@ -6,27 +6,27 @@ describe Experimental::Overrides do
 
   describe "#include?" do
     it "is false if the given subject has not been overriden in the named experiment" do
-      overrides.include?(subject, :my_experiment).should be_false
+      overrides.include?(subject, :my_experiment).should be_falsey
     end
 
     it "is true if the given subject has been overriden in the named experiment" do
       overrides[subject, :my_experiment] = 1
-      overrides.include?(subject, :my_experiment).should be_true
+      overrides.include?(subject, :my_experiment).should be_truthy
     end
 
     it "is true even if the override was set to nil (meaning not in experiment)" do
       overrides[subject, :my_experiment] = nil
-      overrides.include?(subject, :my_experiment).should be_true
+      overrides.include?(subject, :my_experiment).should be_truthy
     end
 
     it "is true if a default is set" do
       overrides.set_default(1)
-      overrides.include?(subject, :my_experiment).should be_true
+      overrides.include?(subject, :my_experiment).should be_truthy
     end
 
     it "is true even if the default is set to nil" do
       overrides.set_default(nil)
-      overrides.include?(subject, :my_experiment).should be_true
+      overrides.include?(subject, :my_experiment).should be_truthy
     end
   end
 
@@ -62,10 +62,10 @@ describe Experimental::Overrides do
   describe "#reset" do
     it "clears the overrides" do
       overrides[subject, :my_experiment] = 1
-      overrides.include?(subject, :my_experiment).should be_true
+      overrides.include?(subject, :my_experiment).should be_truthy
 
       overrides.reset
-      overrides.include?(subject, :my_experiment).should be_false
+      overrides.include?(subject, :my_experiment).should be_falsey
     end
   end
 end

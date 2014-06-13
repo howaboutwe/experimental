@@ -13,6 +13,6 @@ end
 group :test, :development do
   gem 'rails', '3.2'
   gem 'pry'
-  gem 'rspec', '2.99'
+  gem 'rspec'
   gem 'rspec-rails'
 end
