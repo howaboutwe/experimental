@@ -1,3 +1,7 @@
+class User < ActiveRecord::Base
+  include Experimental::Subject
+end
+
 module Experimental::Population
   class OldUsers
     def self.in?(subject, experiment)
