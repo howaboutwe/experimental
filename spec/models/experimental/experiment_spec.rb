@@ -68,19 +68,22 @@ describe Experimental::Experiment do
     e.valid?.should == valid
   end
 
-  it { should validate_presence_of(:name) }
-  it { should validate_presence_of(:num_buckets) }
+  describe "validations" do
+    let(:subject) { FactoryGirl.build(:experiment) }
+    it { should validate_presence_of(:name) }
+    it { should validate_presence_of(:num_buckets) }
 
-  it { should validate_numericality_of(:num_buckets) }
-  it { should_not allow_value(-1).for(:num_buckets) }
-  it { should_not allow_value(0).for(:num_buckets) }
-  it { should allow_value(1).for(:num_buckets) }
-  [:start_date,:end_date].each do |attr|
-    it { should_not allow_value('bad').for(attr) }
-    it { should allow_value('2014-01-01 10:00:00').for(attr) }
-    it { should allow_value(Time.now).for(attr) }
-    it { should allow_value(nil).for(attr) }
-    it { should allow_value(" ").for(attr) }
+    it { should validate_numericality_of(:num_buckets) }
+    it { should_not allow_value(-1).for(:num_buckets) }
+    it { should_not allow_value(0).for(:num_buckets) }
+    it { should allow_value(1).for(:num_buckets) }
+    [:start_date, :end_date].each do |attr|
+      it { should_not allow_value('bad').for(attr) }
+      it { should allow_value('2014-01-01 10:00:00').for(attr) }
+      it { should allow_value(Time.now).for(attr) }
+      it { should allow_value(nil).for(attr) }
+      it { should allow_value(" ").for(attr) }
+    end
   end
 
   describe "scopes" do
@@ -403,18 +406,14 @@ describe Experimental::Experiment do
   end
 
   describe "#remove" do
-    it "updates without protection" do
-      experiment = FactoryGirl.create(:experiment)
-
-      experiment.should_receive(:update_attributes).
-        with(hash_including(:removed_at), { without_protection: true}).
-        and_return(true)
-
-      experiment.remove.should be_truthy
-    end
-
     context "the experiment has not been removed" do
       let(:experiment) { FactoryGirl.create(:experiment) }
+
+      it "returns true and removes the experiment" do
+        experiment.remove.should be true
+        experiment.should be_removed
+      end
+
       it "sets the removed_at timestamp to the current time" do
         expect {
           experiment.remove.should be_truthy

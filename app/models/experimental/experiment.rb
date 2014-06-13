@@ -12,7 +12,7 @@ module Experimental
       :greater_than_or_equal_to => 0,
       :less_than => :num_buckets,
       :if => :ended?
-    validate :has_valid_dates
+    validate :validate_dates
 
     def self.in_code
       where(:removed_at => nil)
@@ -87,9 +87,7 @@ module Experimental
       result = false
 
       unless removed?
-        result = update_attributes(
-          { removed_at: Time.now }, without_protection: true
-        )
+        result = update_attribute(:removed_at, Time.now)
       end
 
       result
@@ -131,15 +129,19 @@ module Experimental
 
     private
 
-    def has_valid_dates
-      %w(start_date end_date).each do |attribute|
+    def validate_dates
+      validate_date 'start_date'
+      validate_date 'end_date'
+    end
+
+    def validate_date(attribute)
         value = read_attribute_before_type_cast(attribute)
+        return if value.blank?
         begin
-          value.try(:to_time)
+          return if value.to_time
         rescue ArgumentError
-          errors.add(attribute, "is not a valid date")
         end
-      end
+        errors.add(attribute, "is not a valid date")
     end
 
     def population_filter
