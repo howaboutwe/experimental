@@ -305,9 +305,7 @@ describe Experimental::Experiment do
         end
 
         it "should set end date" do
-          expect {
-            experiment.end(winning_num)
-          }.to change{ experiment.end_date }
+          -> { experiment.end(winning_num) }.should change{ experiment.end_date }
         end
       end
 
@@ -335,9 +333,9 @@ describe Experimental::Experiment do
       end
 
       it "should set end date" do
-        expect {
+        -> {
           experiment.end(winning_num)
-        }.to change{ experiment.end_date }
+        }.should change{ experiment.end_date }
       end
     end
   end
@@ -415,9 +413,8 @@ describe Experimental::Experiment do
       end
 
       it "sets the removed_at timestamp to the current time" do
-        expect {
-          experiment.remove.should be_truthy
-        }.to change { experiment.removed_at }
+        -> { experiment.remove.should be_truthy }.
+          should change { experiment.removed_at }
       end
     end
 
@@ -427,9 +424,8 @@ describe Experimental::Experiment do
       end
 
       it "does nothing" do
-        expect {
-          experiment.remove.should be_falsey
-        }.to_not change { experiment.removed_at }
+        -> { experiment.remove.should be_falsey }.
+          should_not change { experiment.removed_at }
       end
     end
   end
@@ -549,7 +545,7 @@ describe Experimental::Experiment do
       before { experiment.stub(:removed?).and_return(true) }
 
       it "does not raise an exception" do
-        expect { experiment.in?(user) }.to_not raise_error
+        -> { experiment.in?(user) }.should_not raise_error
       end
 
       it "is false" do

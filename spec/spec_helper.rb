@@ -11,7 +11,6 @@ else
 end
 
 require 'rspec/rails'
-require 'rspec/autorun'
 require 'pry'
 require 'shoulda/matchers'
 require 'factory_girl'
@@ -26,6 +25,14 @@ require 'experimental/rspec_helpers'
 Dir[File.join(ENGINE_RAILS_ROOT, "spec/support/**/*.rb")].each {|f| require f }
 
 RSpec.configure do |config|
+  config.expect_with :rspec do |c|
+    c.syntax = :should
+  end
+
+  config.mock_with :rspec do |c|
+    c.syntax = :should
+  end
+
   # ## Mock Framework
   #
   # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
