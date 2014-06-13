@@ -1,13 +1,6 @@
 source 'https://rubygems.org/'
 gemspec
 
-# jquery-rails is used by the dummy application
-gem 'jquery-rails'
-
-#for activeadmin testing
-gem 'activeadmin'
-gem 'coffee-rails'
-gem 'sass-rails'
 gem 'sqlite3'
 gem 'timecop'
 
@@ -18,6 +11,8 @@ group :test do
 end
 
 group :test, :development do
+  gem 'rails', '3.2'
   gem 'pry'
+  gem 'rspec', '2.99'
   gem 'rspec-rails'
 end
