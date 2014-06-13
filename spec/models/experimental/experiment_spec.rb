@@ -173,20 +173,14 @@ describe Experimental::Experiment do
   end
 
   describe ".last_updated_at" do
-    let!(:first_experiment) do
-      FactoryGirl.create(:experiment, name: "first_experiment", updated_at: 1.day.ago)
-    end
-
-    let!(:last_experiment) do
-      FactoryGirl.create(:experiment, name: "second_experiment", updated_at: Time.now)
-    end
-
     it "is the updated_at timestamp of the most recently updated experiment" do
-      Experimental::Experiment.last_updated_at.should == last_experiment.updated_at
+      timestamp = 2.days.ago
+      FactoryGirl.create(:experiment, name: 'a', updated_at: timestamp)
+      Experimental::Experiment.last_updated_at.should == timestamp
 
-      first_experiment.update_attribute(:name, "newname")
-
-      Experimental::Experiment.last_updated_at.should == first_experiment.reload.updated_at
+      timestamp = 1.day.ago
+      FactoryGirl.create(:experiment, name: 'b', updated_at: timestamp)
+      Experimental::Experiment.last_updated_at.should == timestamp
     end
   end
 
