@@ -176,11 +176,11 @@ describe Experimental::Experiment do
     it "is the updated_at timestamp of the most recently updated experiment" do
       timestamp = 2.days.ago
       FactoryGirl.create(:experiment, name: 'a', updated_at: timestamp)
-      Experimental::Experiment.last_updated_at.should == timestamp
+      Experimental::Experiment.last_updated_at.to_i.should == timestamp.to_i
 
       timestamp = 1.day.ago
       FactoryGirl.create(:experiment, name: 'b', updated_at: timestamp)
-      Experimental::Experiment.last_updated_at.should == timestamp
+      Experimental::Experiment.last_updated_at.to_i.should == timestamp.to_i
     end
   end
 
