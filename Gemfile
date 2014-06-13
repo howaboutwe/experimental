@@ -11,7 +11,7 @@ group :test do
 end
 
 group :test, :development do
-  gem 'rails'
+  gem 'rails', ENV['EXPERIMENTAL_RAILS']
   gem 'pry'
   gem 'rspec'
   gem 'rspec-rails'

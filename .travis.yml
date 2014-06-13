@@ -1,0 +1,11 @@
+language: ruby
+script: bundle exec rspec spec
+rvm:
+  - 2.0.0
+  - 2.1.0
+  - jruby-19mode
+  - rbx-2
+env:
+  - EXPERIMENTAL_RAILS='~> 3.2'
+  - EXPERIMENTAL_RAILS='~> 4.0'
+  - EXPERIMENTAL_RAILS='~> 4.1'
