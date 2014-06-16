@@ -12,7 +12,7 @@ describe Experimental::Subject do
       include_context "in experiment"
 
       it "returns true" do
-        user.in_experiment?(experiment_name).should be_true
+        user.in_experiment?(experiment_name).should be_truthy
       end
     end
 
@@ -20,13 +20,13 @@ describe Experimental::Subject do
       include_context "not in experiment"
 
       it "returns false" do
-        user.in_experiment?(experiment_name).should be_false
+        user.in_experiment?(experiment_name).should be_falsey
       end
     end
 
     context "given an invalid experiment name" do
       it "returns false" do
-        user.in_experiment?(:doesnt_exist).should be_false
+        user.in_experiment?(:doesnt_exist).should be_falsey
       end
     end
   end
@@ -36,7 +36,7 @@ describe Experimental::Subject do
       include_context "not in experiment"
 
       it "returns true" do
-        user.not_in_experiment?(experiment_name).should be_true
+        user.not_in_experiment?(experiment_name).should be_truthy
       end
     end
 
@@ -44,13 +44,13 @@ describe Experimental::Subject do
       include_context "in experiment"
 
       it "returns false" do
-        user.not_in_experiment?(experiment_name).should be_false
+        user.not_in_experiment?(experiment_name).should be_falsey
       end
     end
 
     context "given an invalid experiment name" do
       it "returns true" do
-        user.not_in_experiment?(:doesnt_exist).should be_true
+        user.not_in_experiment?(:doesnt_exist).should be_truthy
       end
     end
   end
@@ -95,13 +95,13 @@ describe Experimental::Subject do
 
       context "given the user's experiment bucket" do
         it "returns true" do
-          user.in_bucket?(experiment_name, 0).should be_true
+          user.in_bucket?(experiment_name, 0).should be_truthy
         end
       end
 
       context "not given the user's experiment bucket" do
         it "returns false" do
-          user.in_bucket?(experiment_name, 1).should be_false
+          user.in_bucket?(experiment_name, 1).should be_falsey
         end
       end
     end
@@ -112,13 +112,13 @@ describe Experimental::Subject do
       end
       context "given the user's experiment bucket" do
         it "returns false" do
-          user.in_bucket?(experiment_name, 0).should be_false
+          user.in_bucket?(experiment_name, 0).should be_falsey
         end
       end
 
       context "not given the user's experiment bucket" do
         it "returns false" do
-          user.in_bucket?(experiment_name, 1).should be_false
+          user.in_bucket?(experiment_name, 1).should be_falsey
         end
       end
     end
@@ -139,7 +139,7 @@ describe Experimental::Subject do
     end
 
     it "returns true" do
-      test_obj.in_experiment?(exp_name2).should be_true
+      test_obj.in_experiment?(exp_name2).should be_truthy
     end
   end
 end

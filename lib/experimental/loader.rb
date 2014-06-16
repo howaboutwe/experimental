@@ -13,7 +13,7 @@ module Experimental
 
       Experimental::Experiment.transaction do
         active = Experimental.experiment_data.map do |name, attributes|
-          experiment = Experimental::Experiment.find_or_initialize_by_name(name)
+          experiment = Experimental::Experiment.where(name: name).first_or_initialize
 
           unstarted = attributes.delete('unstarted')
           defaults = {'num_buckets' => nil, 'notes' => nil, 'population' => nil}

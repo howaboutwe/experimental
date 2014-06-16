@@ -2,13 +2,13 @@ require 'spec_helper'
 
 shared_examples_for "user should be in experiment" do
   it "should say the user is in the experiment" do
-    experiment.in?(u).should be_true
+    experiment.in?(u).should be_truthy
   end
 end
 
 shared_examples_for "user should not be in experiment" do
   it "should say the user is not in the experiment" do
-    experiment.in?(u).should be_false
+    experiment.in?(u).should be_falsey
   end
 end
 
@@ -68,19 +68,22 @@ describe Experimental::Experiment do
     e.valid?.should == valid
   end
 
-  it { should validate_presence_of(:name) }
-  it { should validate_presence_of(:num_buckets) }
+  describe "validations" do
+    let(:subject) { FactoryGirl.build(:experiment) }
+    it { should validate_presence_of(:name) }
+    it { should validate_presence_of(:num_buckets) }
 
-  it { should validate_numericality_of(:num_buckets) }
-  it { should_not allow_value(-1).for(:num_buckets) }
-  it { should_not allow_value(0).for(:num_buckets) }
-  it { should allow_value(1).for(:num_buckets) }
-  [:start_date,:end_date].each do |attr|
-    it { should_not allow_value('bad').for(attr) }
-    it { should allow_value('2014-01-01 10:00:00').for(attr) }
-    it { should allow_value(Time.now).for(attr) }
-    it { should allow_value(nil).for(attr) }
-    it { should allow_value(" ").for(attr) }
+    it { should validate_numericality_of(:num_buckets) }
+    it { should_not allow_value(-1).for(:num_buckets) }
+    it { should_not allow_value(0).for(:num_buckets) }
+    it { should allow_value(1).for(:num_buckets) }
+    [:start_date, :end_date].each do |attr|
+      it { should_not allow_value('bad').for(attr) }
+      it { should allow_value('2014-01-01 10:00:00').for(attr) }
+      it { should allow_value(Time.now).for(attr) }
+      it { should allow_value(nil).for(attr) }
+      it { should allow_value(" ").for(attr) }
+    end
   end
 
   describe "scopes" do
@@ -170,20 +173,14 @@ describe Experimental::Experiment do
   end
 
   describe ".last_updated_at" do
-    let!(:first_experiment) do
-      FactoryGirl.create(:experiment, name: "first_experiment", updated_at: 1.day.ago)
-    end
-
-    let!(:last_experiment) do
-      FactoryGirl.create(:experiment, name: "second_experiment", updated_at: Time.now)
-    end
-
     it "is the updated_at timestamp of the most recently updated experiment" do
-      Experimental::Experiment.last_updated_at.should == last_experiment.updated_at
+      timestamp = 2.days.ago
+      FactoryGirl.create(:experiment, name: 'a', updated_at: timestamp)
+      Experimental::Experiment.last_updated_at.to_i.should == timestamp.to_i
 
-      first_experiment.update_attribute(:name, "newname")
-
-      Experimental::Experiment.last_updated_at.should == first_experiment.reload.updated_at
+      timestamp = 1.day.ago
+      FactoryGirl.create(:experiment, name: 'b', updated_at: timestamp)
+      Experimental::Experiment.last_updated_at.to_i.should == timestamp.to_i
     end
   end
 
@@ -293,7 +290,7 @@ describe Experimental::Experiment do
         let(:winning_num) { 0 }
 
         it "should return true" do
-          experiment.end(winning_num).should be_true
+          experiment.end(winning_num).should be_truthy
         end
 
         it "should set winning bucket" do
@@ -302,9 +299,7 @@ describe Experimental::Experiment do
         end
 
         it "should set end date" do
-          expect {
-            experiment.end(winning_num)
-          }.to change{ experiment.end_date }
+          -> { experiment.end(winning_num) }.should change{ experiment.end_date }
         end
       end
 
@@ -312,7 +307,7 @@ describe Experimental::Experiment do
         let(:winning_num) { 8 }
 
         it "should return false" do
-          experiment.end(winning_num).should be_false
+          experiment.end(winning_num).should be_falsey
         end
       end
     end
@@ -323,7 +318,7 @@ describe Experimental::Experiment do
       let(:winning_num) { 0 }
 
       it "should return true" do
-        experiment.end(winning_num).should be_true
+        experiment.end(winning_num).should be_truthy
       end
 
       it "should set winning bucket" do
@@ -332,9 +327,9 @@ describe Experimental::Experiment do
       end
 
       it "should set end date" do
-        expect {
+        -> {
           experiment.end(winning_num)
-        }.to change{ experiment.end_date }
+        }.should change{ experiment.end_date }
       end
     end
   end
@@ -387,7 +382,7 @@ describe Experimental::Experiment do
   describe "#unstart" do
     it "removes any existing start and end date, and winning bucket" do
       experiment = FactoryGirl.create(:experiment, :ended, winning_bucket: 1)
-      experiment.unstart.should be_true
+      experiment.unstart.should be_truthy
 
       experiment.should_not be_started
       experiment.start_date.should be_nil
@@ -397,28 +392,23 @@ describe Experimental::Experiment do
 
     it "restores the experiment if it was removed" do
       experiment = FactoryGirl.create(:experiment, :removed)
-      experiment.unstart.should be_true
+      experiment.unstart.should be_truthy
       experiment.should_not be_removed
     end
   end
 
   describe "#remove" do
-    it "updates without protection" do
-      experiment = FactoryGirl.create(:experiment)
-
-      experiment.should_receive(:update_attributes).
-        with(hash_including(:removed_at), { without_protection: true}).
-        and_return(true)
-
-      experiment.remove.should be_true
-    end
-
     context "the experiment has not been removed" do
       let(:experiment) { FactoryGirl.create(:experiment) }
+
+      it "returns true and removes the experiment" do
+        experiment.remove.should be true
+        experiment.should be_removed
+      end
+
       it "sets the removed_at timestamp to the current time" do
-        expect {
-          experiment.remove.should be_true
-        }.to change { experiment.removed_at }
+        -> { experiment.remove.should be_truthy }.
+          should change { experiment.removed_at }
       end
     end
 
@@ -428,9 +418,8 @@ describe Experimental::Experiment do
       end
 
       it "does nothing" do
-        expect {
-          experiment.remove.should be_false
-        }.to_not change { experiment.removed_at }
+        -> { experiment.remove.should be_falsey }.
+          should_not change { experiment.removed_at }
       end
     end
   end
@@ -442,7 +431,7 @@ describe Experimental::Experiment do
       before { experiment.stub(:removed_at).and_return(nil) }
 
       it "returns false" do
-        experiment.removed?.should be_false
+        experiment.removed?.should be_falsey
       end
     end
 
@@ -450,7 +439,7 @@ describe Experimental::Experiment do
       before { experiment.stub(:removed_at).and_return(Time.now) }
 
       it "returns true" do
-        experiment.removed?.should be_true
+        experiment.removed?.should be_truthy
       end
     end
   end
@@ -462,7 +451,7 @@ describe Experimental::Experiment do
       before { experiment.stub(:end_date).and_return(nil) }
 
       it "returns false" do
-        experiment.ended?.should be_false
+        experiment.ended?.should be_falsey
       end
     end
 
@@ -471,7 +460,7 @@ describe Experimental::Experiment do
         before { experiment.stub(:end_date).and_return(1.day.ago) }
 
         it "returns true" do
-          experiment.ended?.should be_true
+          experiment.ended?.should be_truthy
         end
       end
 
@@ -479,7 +468,7 @@ describe Experimental::Experiment do
         before { experiment.stub(:end_date).and_return(1.day.from_now) }
 
         it "returns false" do
-          experiment.ended?.should be_false
+          experiment.ended?.should be_falsey
         end
       end
     end
@@ -550,11 +539,11 @@ describe Experimental::Experiment do
       before { experiment.stub(:removed?).and_return(true) }
 
       it "does not raise an exception" do
-        expect { experiment.in?(user) }.to_not raise_error
+        -> { experiment.in?(user) }.should_not raise_error
       end
 
       it "is false" do
-        experiment.in?(user).should be_false
+        experiment.in?(user).should be_falsey
       end
     end
 
@@ -563,7 +552,7 @@ describe Experimental::Experiment do
       after { Experimental.overrides.reset }
 
       it "is true" do
-        experiment.in?(user).should be_true
+        experiment.in?(user).should be_truthy
       end
     end
 
@@ -572,7 +561,7 @@ describe Experimental::Experiment do
       after { Experimental.overrides.reset }
 
       it "is false" do
-        experiment.in?(user).should be_false
+        experiment.in?(user).should be_falsey
       end
     end
   end

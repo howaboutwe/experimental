@@ -3,9 +3,14 @@ ENV["RAILS_ENV"] ||= 'test'
 
 ENGINE_RAILS_ROOT = File.join(File.dirname(__FILE__), '../')
 
-require File.expand_path("../dummy/config/environment.rb",  __FILE__)
+require 'rails'
+if Rails::VERSION::MAJOR == 3
+  require File.expand_path("../dummy-rails3/config/environment.rb",  __FILE__)
+else
+  require File.expand_path("../dummy-rails4/config/environment.rb",  __FILE__)
+end
+
 require 'rspec/rails'
-require 'rspec/autorun'
 require 'pry'
 require 'shoulda/matchers'
 require 'factory_girl'
@@ -20,6 +25,14 @@ require 'experimental/rspec_helpers'
 Dir[File.join(ENGINE_RAILS_ROOT, "spec/support/**/*.rb")].each {|f| require f }
 
 RSpec.configure do |config|
+  config.expect_with :rspec do |c|
+    c.syntax = :should
+  end
+
+  config.mock_with :rspec do |c|
+    c.syntax = :should
+  end
+
   # ## Mock Framework
   #
   # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
@@ -40,8 +53,4 @@ RSpec.configure do |config|
   # automatically. This will be the default behavior in future versions of
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
-
-  config.include Devise::TestHelpers, type: :controller
 end
-
-ActiveRecord::Migrator.migrate File.expand_path("../dummy/db/migrate/", __FILE__)
