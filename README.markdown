@@ -1,4 +1,5 @@
-# Experimental
+# Experimental [![Build Status](https://travis-ci.org/howaboutwe/experimental.png)](https://travis-ci.org/howaboutwe/experimental)
+
 Experimental is an Split testing framework for Rails.  
 It was written with a few goals in mind:
 * Split the users in a non-predictable pattern (i.e. half of the users won't always
