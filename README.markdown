@@ -147,29 +147,15 @@ You will likely want to automate the running of `rake
 experimental:sync` by adding to your deploy file.
 
 ### Capistrano
-In `config/deploy.rb`:
 
-Create a namespace to run the task:
-```ruby
-namespace :database do
-  desc "Sync experiments"
-  task :sync_from_app, roles: :db, only: { primary: true } do
-    run "cd #{current_path} && RAILS_ENV=#{rails_env} bundle exec rake experimental:sync"
-  end
-end
-```
+When you deploy, simply invoke the experimental:sync Rake task to update the
+experiments in your database from the configuration file:
 
-Include that in the deploy:default task:
 ```ruby
-namespace :deploy do
-  #...
-  task :default do
-    begin
-      update_code
-      migrate
-      database.sync_from_app
-      restart
-    #...
+after 'deploy:updated', 'experimental:sync' do
+  on primary :worker do
+    within release_path do
+      rake experimental:sync
     end
   end
 end
