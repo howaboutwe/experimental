@@ -13,6 +13,7 @@ end
 group :test, :development do
   gem 'rails', ENV['EXPERIMENTAL_RAILS']
   gem 'pry'
+  gem 'ritual'
   gem 'rspec'
   gem 'rspec-rails'
 end
