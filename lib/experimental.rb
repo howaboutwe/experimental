@@ -2,12 +2,14 @@ require 'rails'
 require 'experimental/engine'
 
 module Experimental
-  autoload :VERSION, 'experimental/version'
-  autoload :ControllerActions, 'experimental/controller_actions'
+  autoload :Experiment, 'experimental/experiment'
   autoload :Loader, 'experimental/loader'
   autoload :Overrides, 'experimental/overrides'
+  autoload :Population, 'experimental/population'
   autoload :Source, 'experimental/source'
+  autoload :Subject, 'experimental/subject'
   autoload :Test, 'experimental/test'
+  autoload :VERSION, 'experimental/version'
 
   class << self
     def configure(configuration)
