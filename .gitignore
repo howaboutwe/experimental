@@ -1,5 +1,5 @@
+.bundle
 .DS_Store
+Gemfile.lock
+spec/dummy-rails*/log
 *~
-spec/dummy/db/test.sqlite3
-spec/dummy/log/*
-spec/dummy/tmp/*
