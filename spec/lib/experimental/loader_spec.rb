@@ -90,13 +90,26 @@ describe Experimental::Loader do
   end
 
   context "when an experiment has been removed from the configuration" do
-    before { FactoryGirl.create(:experiment, name: 'aa', num_buckets: 5) }
+    let!(:experiment) do
+      FactoryGirl.create(:experiment, name: 'aa', num_buckets: 5)
+    end
 
-    it "marks the experiment as removed" do
-      loader.sync
-      experiments = Experimental::Experiment.all
-      experiments.map(&:name).should == ['aa']
-      experiments.map(&:removed?).should == [true]
+    context "when given an admin experiment" do
+      before { Experimental::Experiment.any_instance.stub(admin?: true) }
+
+      it "does not remove the experiment" do
+        loader.sync
+        experiment.reload.should_not be_removed
+      end
+    end
+
+    context "when given a non-admin experiment" do
+      before { Experimental::Experiment.any_instance.stub(admin?: false) }
+
+      it "it removes the experiment" do
+        loader.sync
+        experiment.reload.should be_removed
+      end
     end
 
     it "logs it" do
