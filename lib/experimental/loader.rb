@@ -12,12 +12,14 @@ module Experimental
       logger.info "Synchronizing experiments..."
 
       Experimental::Experiment.transaction do
-        scope = Experimental::Experiment.in_code
-        active_ids = updated_active_experiments.map(&:id)
-        active_ids.empty? or
-          scope = scope.where('id NOT IN (?)', active_ids)
+        all_experiments = Experimental::Experiment.in_code
+        active_ids = create_or_update_active_experiments.map(&:id)
 
-        remove_experiments(scope)
+        if active_ids.empty?
+          remove(all_experiments)
+        else
+          remove(all_experiments.where('id NOT IN (?)', active_ids))
+        end
       end
 
       logger.info "Done."
@@ -25,12 +27,12 @@ module Experimental
 
     private
 
-    def updated_active_experiments
+    def create_or_update_active_experiments
       Experimental.experiment_data.map do |name, attributes|
         experiment = Experimental::Experiment.where(name: name).
           first_or_initialize
 
-        nullify_attributes(experiment, attributes)
+        reset_attributes(experiment, attributes)
 
         logger.info "  * #{experiment.id ? 'updating' : 'creating'} #{name}"
 
@@ -38,18 +40,18 @@ module Experimental
       end
     end
 
-    def remove_experiments(scope)
-      scope.find_each do |experiment|
+    def reset_attributes(experiment, attributes)
+      set_new_start_date(experiment, attributes)
+      defaults = {'num_buckets' => nil, 'notes' => nil, 'population' => nil}
+      experiment.assign_attributes(defaults.merge(attributes))
+    end
+
+    def remove(experiments)
+      experiments.find_each do |experiment|
         next if experiment.admin?
         logger.info "  * removing #{experiment.name}"
         experiment.remove
       end
-    end
-
-    def nullify_attributes(experiment, attributes)
-      set_new_start_date(experiment, attributes)
-      defaults = {'num_buckets' => nil, 'notes' => nil, 'population' => nil}
-      experiment.assign_attributes(defaults.merge(attributes))
     end
 
     def set_new_start_date(experiment, attributes)
