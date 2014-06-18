@@ -13,12 +13,13 @@ module Experimental
 
       Experimental::Experiment.transaction do
         all_experiments = Experimental::Experiment.in_code
-        active_ids = create_or_update_active_experiments.map(&:id)
+        active_experiments = create_or_update_active_experiments
 
-        if active_ids.empty?
-          remove(all_experiments)
-        else
+        if active_experiments.present?
+          active_ids = active_experiments.map(&:id)
           remove(all_experiments.where('id NOT IN (?)', active_ids))
+        else
+          remove(all_experiments)
         end
       end
 
