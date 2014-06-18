@@ -2,3 +2,5 @@
 
  * Experimental is now Rails 4 compatible.
  * Experimental models are no longer reloaded in dev mode.
+ * Removed ControllerActions.
+ * Added license (MIT), changelog.
