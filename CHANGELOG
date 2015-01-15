@@ -1,3 +1,7 @@
+== LATEST
+
+ * Add unstarted scope, and exclude unstarted from in_progress.
+
 == 0.5.0 2014-06-18
 
  * Experimental is now Rails 4 compatible.

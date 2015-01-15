@@ -87,28 +87,34 @@ describe Experimental::Experiment do
   end
 
   describe "scopes" do
-    let(:exp_not_removed) { FactoryGirl.create(:experiment) }
-    let(:exp_in_progress) { FactoryGirl.create(:experiment,  name: 'in progress' ) }
-    let(:exp_ended) { FactoryGirl.create(:experiment,  name: 'ended', end_date: Date.today, winning_bucket:0) }
-    let(:exp_removed) { FactoryGirl.create(:experiment,
+    let!(:exp_unstarted) { FactoryGirl.create(:experiment, name: 'unstarted', start_date: nil) }
+    let!(:exp_in_progress) { FactoryGirl.create(:experiment,  name: 'in progress' ) }
+    let!(:exp_ended) { FactoryGirl.create(:experiment,  name: 'ended', end_date: Date.today, winning_bucket:0) }
+    let!(:exp_removed) { FactoryGirl.create(:experiment,
                           name: 'removed',
                           winning_bucket:0,
                           end_date: Date.today,
                           removed_at: Date.today) }
 
-    describe "#in_code" do
-      it "should return only the not ended experiment" do
-        Experimental::Experiment.in_code.should == [exp_not_removed]
+    describe ".unstarted" do
+      it "should return all unstarted experiments" do
+        Experimental::Experiment.unstarted.should =~ [exp_unstarted]
       end
     end
 
-    describe "#in_progress" do
-      it "should return only the not ended experiment" do
+    describe ".in_code" do
+      it "should return anything that isn't removed" do
+        Experimental::Experiment.in_code.should =~ [exp_unstarted, exp_in_progress, exp_ended]
+      end
+    end
+
+    describe ".in_progress" do
+      it "should return experiments in progress" do
         Experimental::Experiment.in_progress.should == [exp_in_progress]
       end
     end
 
-    describe "#ended_or_removed" do
+    describe ".ended_or_removed" do
       it "should return only the not ended experiment" do
         Experimental::Experiment.ended_or_removed.should == [exp_ended, exp_removed]
       end

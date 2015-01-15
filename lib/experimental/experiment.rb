@@ -18,8 +18,12 @@ module Experimental
       where(:removed_at => nil)
     end
 
+    def self.unstarted
+      where(start_date: nil)
+    end
+
     def self.in_progress
-      where('removed_at is null and end_date is null').
+      where('start_date is not null and end_date is null and removed_at is null').
         order('start_date desc').
         order(:name)
     end
