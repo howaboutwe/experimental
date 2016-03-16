@@ -31,16 +31,20 @@ end
 ### Create an experiment
 
 In `config/experimental.yml`, add the name, num_buckets, and notes of the
-experiment under in_code:
+experiment under experiments:
 ```yaml
-in_code:
--
-  name: :price_experiment
-  num_buckets: 2
-  notes: |
-    0: $22
-    1: $19.99
+experiments:
+  home_page_test:
+    num_buckets: 2
+    notes: |
+      0: original home page
+      1: new home page
 
+  referral_discount:
+    num_buckets: 2
+    notes: |
+      0: no discount
+      1: gets a referral discount
 ```
 Then run `rake experimental:sync`
 
@@ -140,7 +144,7 @@ require 'experimental/test/cucumber'
 
 Experiments *can* be defined in `config/experimental.yml`
 Running the rake task `rake experimental:sync` will load those
-experiments under 'in_code' into the database and set removed_at
+experiments under 'experiments' into the database and set the removed_at
 timestamp for those under 'removed'
 
 You will likely want to automate the running of `rake

@@ -21,7 +21,7 @@
 #   notes: |
 #      0: sees experiment
 #      1: does not see experiment
-in_code:
+experiments:
 
 # copy an experiment to this section when all code paths have been removed
 # removed at date will be set in rake task
