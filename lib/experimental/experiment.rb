@@ -122,12 +122,16 @@ module Experimental
       available.where('start_date < ? AND end_date IS NULL OR ? <= end_date', now, now)
     end
 
-    def to_sql_formula(subject_table = "users")
-      "CONV(SUBSTR(SHA1(CONCAT(\"#{name}\",#{subject_table}.id)),1,8),16,10) % #{num_buckets}"
+    def to_mysql_formula(subject_table = "users")
+      "CONV(SUBSTR(MD5(CONCAT(\"#{name}\",#{subject_table}.id)),1,8),16,10) % #{num_buckets}"
+    end
+
+    def to_postgres_formula(subject_table = "users")
+      "('x'||substr(md5('#{name}'||#{subject_table}.id),1,8))::bit(32)::bigint % #{num_buckets}"
     end
 
     def bucket_number(subject)
-      top_8 = Digest::SHA1.hexdigest("#{name}#{subject.experiment_seed_value}")[0..7]
+      top_8 = Digest::MD5.hexdigest("#{name}#{subject.experiment_seed_value}")[0..7]
       top_8.to_i(16) % num_buckets
     end
 
