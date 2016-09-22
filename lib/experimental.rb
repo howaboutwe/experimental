@@ -46,10 +46,10 @@ module Experimental
       self.experiment_data = nil
       Experiment.reset_population_filters
     end
-  end
 
-  def self.overrides
-    Thread.current[:experimental_overrides] ||= Overrides.new
+    def overrides
+      @experimental_overrides ||= Overrides.new
+    end
   end
 end
 
