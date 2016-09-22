@@ -28,4 +28,13 @@ describe Experimental do
       end.join
     end
   end
+
+  describe ".overrides" do
+    it "ensures the overrides state persists across threads (e.g. capybara threads)" do
+      override = Experimental.overrides
+      Thread.new do
+        Experimental.overrides.should eq(override)
+      end.join
+    end
+  end
 end
