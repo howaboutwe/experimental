@@ -15,13 +15,13 @@ module Experimental
     def include?(subject, experiment_name)
       return true if @default_set
       experiment_name = experiment_name.to_s
-      @overrides.key?(experiment_name) && @overrides[experiment_name].key?(subject)
+      @overrides.key?(experiment_name) && @overrides[experiment_name].key?(subject.experiment_seed_value)
     end
 
     def [](subject, experiment_name)
       experiment_name = experiment_name.to_s
-      if @overrides[experiment_name].key?(subject)
-        @overrides[experiment_name][subject]
+      if @overrides[experiment_name].key?(subject.experiment_seed_value)
+        @overrides[experiment_name][subject.experiment_seed_value]
       else
         @default
       end
@@ -29,7 +29,7 @@ module Experimental
 
     def []=(subject, experiment_name, bucket)
       experiment_name = experiment_name.to_s
-      @overrides[experiment_name][subject] = bucket
+      @overrides[experiment_name][subject.experiment_seed_value] = bucket
     end
 
     def reset

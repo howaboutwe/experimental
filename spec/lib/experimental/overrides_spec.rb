@@ -1,8 +1,10 @@
 require 'spec_helper'
 
+TestSubject = ImmutableStruct.new(:experiment_seed_value)
+
 describe Experimental::Overrides do
   let(:overrides) { Experimental::Overrides.new }
-  let(:subject) { Object.new }
+  let(:subject) { TestSubject.new(experiment_seed_value: 1) }
 
   describe "#include?" do
     it "is false if the given subject has not been overriden in the named experiment" do

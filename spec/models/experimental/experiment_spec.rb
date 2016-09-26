@@ -122,14 +122,14 @@ describe Experimental::Experiment do
 
   end
 
-  describe "#to_sql_formula" do
+  describe "#to_mysql_formula" do
     it "returns correct sql fragment for users table" do
       Experimental::Experiment.stub(:find).with(1).and_return(
         FactoryGirl.create(:experiment, id: 1, name: "experiment", num_buckets: 2)
       )
 
-      Experimental::Experiment.find(1).to_sql_formula.should ==
-        "CONV(SUBSTR(SHA1(CONCAT(\"experiment\",users.id)),1,8),16,10) % 2"
+      Experimental::Experiment.find(1).to_mysql_formula.should ==
+        "CONV(SUBSTR(MD5(CONCAT(\"experiment\",users.id)),1,8),16,10) % 2"
     end
 
     it "returns correct sql fragment for someother table" do
@@ -137,8 +137,8 @@ describe Experimental::Experiment do
         FactoryGirl.create(:experiment, id: 1, name: "experiment", num_buckets: 2)
       )
 
-      Experimental::Experiment.find(1).to_sql_formula("someother").should ==
-        "CONV(SUBSTR(SHA1(CONCAT(\"experiment\",someother.id)),1,8),16,10) % 2"
+      Experimental::Experiment.find(1).to_mysql_formula("someother").should ==
+        "CONV(SUBSTR(MD5(CONCAT(\"experiment\",someother.id)),1,8),16,10) % 2"
     end
   end
 

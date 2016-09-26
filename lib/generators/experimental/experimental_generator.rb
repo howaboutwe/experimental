@@ -4,7 +4,7 @@ class ExperimentalGenerator < Rails::Generators::Base
 
   desc "copy experiments yaml file"
   def copy_experiments_yaml
-    copy_file "experiments.yml", "config/experiments.yml"
+    copy_file "experimental.yml", "config/experimental.yml"
   end
 
   desc "copy initializer"
