@@ -8,6 +8,7 @@ group :test do
   gem 'capybara'
   gem 'factory_girl'
   gem 'shoulda-matchers'
+  gem "immutable-struct"
 end
 
 group :test, :development do
